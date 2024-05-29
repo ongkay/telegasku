@@ -1,0 +1,38 @@
+{
+    "update_id": 708507465,
+    "message": {
+        "message_id": 204,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": 6770187132,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "type": "private"
+        },
+        "date": 1715852493,
+        "reply_to_message": {
+            "message_id": 200,
+            "from": {
+                "id": 7062989862,
+                "is_bot": true,
+                "first_name": "jurnaltradeku",
+                "username": "jurnaltradebot"
+            },
+            "chat": {
+                "id": 6770187132,
+                "first_name": "setiawan",
+                "username": "ongtrade",
+                "type": "private"
+            },
+            "date": 1715851788,
+            "text": "{\"update_id\":708507462,\"message\":{\"message_id\":199,\"from\":{\"id\":6770187132,\"is_bot\":false,\"first_name\":\"setiawan\",\"username\":\"ongtrade\",\"language_code\":\"en\"},\"chat\":{\"id\":6770187132,\"first_name\":\"setiawan\",\"username\":\"ongtrade\",\"type\":\"private\"},\"date\":1715851786,\"text\":\"XAUUSD sell now @ 2367\\ntp @ 2354\\ntp2 @ 2334\\n\\nSL @ 2377\"}}"
+        },
+        "text": "replay pesan bot"
+    }
+}

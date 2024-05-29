@@ -1,0 +1,68 @@
+{
+    "update_id": 708507458,
+    "message": {
+        "message_id": 192,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": 6770187132,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "type": "private"
+        },
+        "date": 1715756917,
+        "forward_origin": {
+            "type": "channel",
+            "chat": {
+                "id": -1001518589217,
+                "title": "GFR ANALYSIS VIP",
+                "type": "channel"
+            },
+            "message_id": 19734,
+            "date": 1715698766
+        },
+        "forward_from_chat": {
+            "id": -1001518589217,
+            "title": "GFR ANALYSIS VIP",
+            "type": "channel"
+        },
+        "forward_from_message_id": 19734,
+        "forward_date": 1715698766,
+        "photo": [
+            {
+                "file_id": "AgACAgQAAxkBAAPAZkRfdc1cDWRq8wABmDEi8L7VN6O5AAILwDEbXbEZUh1_v536ktycAQADAgADcwADNQQ",
+                "file_unique_id": "AQADC8AxG12xGVJ4",
+                "file_size": 763,
+                "width": 90,
+                "height": 49
+            },
+            {
+                "file_id": "AgACAgQAAxkBAAPAZkRfdc1cDWRq8wABmDEi8L7VN6O5AAILwDEbXbEZUh1_v536ktycAQADAgADbQADNQQ",
+                "file_unique_id": "AQADC8AxG12xGVJy",
+                "file_size": 7909,
+                "width": 320,
+                "height": 174
+            },
+            {
+                "file_id": "AgACAgQAAxkBAAPAZkRfdc1cDWRq8wABmDEi8L7VN6O5AAILwDEbXbEZUh1_v536ktycAQADAgADeAADNQQ",
+                "file_unique_id": "AQADC8AxG12xGVJ9",
+                "file_size": 28640,
+                "width": 800,
+                "height": 435
+            },
+            {
+                "file_id": "AgACAgQAAxkBAAPAZkRfdc1cDWRq8wABmDEi8L7VN6O5AAILwDEbXbEZUh1_v536ktycAQADAgADeQADNQQ",
+                "file_unique_id": "AQADC8AxG12xGVJ-",
+                "file_size": 49323,
+                "width": 1280,
+                "height": 696
+            }
+        ],
+        "caption": "XAGUSD sell now @ 28.480\ntp @ 28.300\ntp 2 @ 27.900\n\nSl @ 28.650"
+    }
+}

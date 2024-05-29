@@ -1,0 +1,63 @@
+{
+    "update_id": 708507471,
+    "message": {
+        "message_id": 1228,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1002065173361,
+            "title": "Performa-Signal",
+            "is_forum": true,
+            "type": "supergroup"
+        },
+        "date": 1715853686,
+        "message_thread_id": 8,
+        "reply_to_message": {
+            "message_id": 1223,
+            "from": {
+                "id": 6770187132,
+                "is_bot": false,
+                "first_name": "setiawan",
+                "username": "ongtrade",
+                "language_code": "en"
+            },
+            "chat": {
+                "id": -1002065173361,
+                "title": "Performa-Signal",
+                "is_forum": true,
+                "type": "supergroup"
+            },
+            "date": 1715853322,
+            "edit_date": 1715853334,
+            "message_thread_id": 8,
+            "text": "/input XAUUSD sell now @ 2289\nTp @2278\nTp 2 @ 2333\n\nSl @ 2298",
+            "entities": [
+                {
+                    "offset": 0,
+                    "length": 6,
+                    "type": "bot_command"
+                },
+                {
+                    "offset": 33,
+                    "length": 5,
+                    "type": "mention"
+                }
+            ],
+            "is_topic_message": true
+        },
+        "text": "/blg",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 4,
+                "type": "bot_command"
+            }
+        ],
+        "is_topic_message": true
+    }
+}

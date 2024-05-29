@@ -1,0 +1,20 @@
+{
+  "name": "telegas",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "push": "clasp push",
+    "pushf": "clasp push -f",
+    "pushw": "clasp push --watch ",
+    "status": "clasp status",
+    "newdeploy": "clasp deploy",
+    "redeploy": "clasp deploy --deploymentId AKfycbxeOeFauBWNfXyZd5_dnrT4Wycfjt7YbcuMQsHx1EAMZRDzlcWkeBjlakr4QGACxtCGhA"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/google-apps-script": "^1.0.83"
+  }
+}

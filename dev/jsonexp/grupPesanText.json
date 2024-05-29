@@ -1,0 +1,46 @@
+{
+    "update_id": 708507503,
+    "message": {
+        "message_id": 1236,
+        "from": {
+            "id": 441522292,
+            "is_bot": false,
+            "first_name": "Hongki",
+            "last_name": "Setiawan",
+            "username": "ongkii"
+        },
+        "chat": {
+            "id": -1002065173361,
+            "title": "Performa-Signal",
+            "is_forum": true,
+            "type": "supergroup"
+        },
+        "date": 1716782360,
+        "message_thread_id": 8,
+        "reply_to_message": {
+            "message_id": 8,
+            "from": {
+                "id": 441522292,
+                "is_bot": false,
+                "first_name": "Hongki",
+                "last_name": "Setiawan",
+                "username": "ongkii"
+            },
+            "chat": {
+                "id": -1002065173361,
+                "title": "Performa-Signal",
+                "is_forum": true,
+                "type": "supergroup"
+            },
+            "date": 1701389406,
+            "message_thread_id": 8,
+            "forum_topic_created": {
+                "name": "GFR Analysis",
+                "icon_color": 7322096
+            },
+            "is_topic_message": true
+        },
+        "text": "Buy now",
+        "is_topic_message": true
+    }
+}

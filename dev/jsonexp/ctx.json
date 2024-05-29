@@ -1,0 +1,28 @@
+{
+    "update_id": 708507416,
+    "message": {
+        "message_id": 118,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": 6770187132,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "type": "private"
+        },
+        "date": 1715496211,
+        "text": "/input\nXAUUSD sell now @ 2367\ntp @ 2354\ntp2 @ 2334\n\nSL @ 2377",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 6,
+                "type": "bot_command"
+            }
+        ]
+    }
+}

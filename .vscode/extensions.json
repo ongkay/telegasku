@@ -1,0 +1,22 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "mohsen1.prettify-json",
+    "wallabyjs.quokka-vscode",
+    "formulahendry.auto-rename-tag",
+    "beardedbear.beardedicons",
+    "beardedbear.beardedtheme",
+    "xabikos.javascriptsnippets",
+    "afifu.vscode-js-ts-react-nextjs-snippets",
+    "joelcrosby.one-dark-darker",
+    "zhuangtongfa.material-theme",
+    "vscode-icons-team.vscode-icons",
+    "pranaygp.vscode-css-peek",
+    "irongeek.vscode-env",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "keshan.markdown-live",
+    "shd101wyy.markdown-preview-enhanced",
+    "christian-kohler.path-intellisense"
+  ]
+}

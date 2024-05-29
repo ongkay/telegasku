@@ -1,0 +1,39 @@
+{
+  "timeZone": "Asia/Jakarta",
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "dependencies": {
+    "libraries": [
+      {
+        "userSymbol": "lumpia",
+        "libraryId": "1Yo6vQRwjG5Gl9jeEF0g2tBTUa0XN5MyT4G_HeDpRr9DvabxhRcSdhPNj",
+        "version": "10"
+      },
+      {
+        "userSymbol": "Dbsheet",
+        "version": "0",
+        "libraryId": "1swMZxPdYoJI9z1QhJGBC2wPBLTgE9Tjn57kqkiVCLkBRyBMniAY2WR4g",
+        "developmentMode": true
+      }
+    ]
+  },
+  "webapp": {
+    "executeAs": "USER_DEPLOYING",
+    "access": "ANYONE_ANONYMOUS"
+  },
+  "executionApi": {
+    "access": "ANYONE"
+  },
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/script.deployments",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/script.projects",
+    "https://www.googleapis.com/auth/script.webapp.deploy",
+    "https://www.googleapis.com/auth/drive.metadata.readonly",
+    "https://www.googleapis.com/auth/drive.file",
+    "https://www.googleapis.com/auth/service.management",
+    "https://www.googleapis.com/auth/logging.read",
+    "https://www.googleapis.com/auth/cloud-platform"
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "workbench.colorTheme": "One Dark Darker",
+  "git.enableSmartCommit": true,
+  "workbench.iconTheme": "vscode-icons",
+  "editor.formatOnSave": true,
+  "editor.fontVariations": false,
+  "editor.fontFamily": "FiraCode Nerd Font",
+  "editor.fontSize": 14,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "editor.linkedEditing": true,
+  "liveServer.settings.donotVerifyTags": true,
+  "liveServer.settings.donotShowInfoMsg": true,
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.guides.bracketPairs": true
+}

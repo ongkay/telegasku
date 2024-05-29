@@ -1,0 +1,58 @@
+{
+    "update_id": 708507456,
+    "message": {
+        "message_id": 1219,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1002065173361,
+            "title": "Performa-Signal",
+            "is_forum": true,
+            "type": "supergroup"
+        },
+        "date": 1715756446,
+        "message_thread_id": 8,
+        "reply_to_message": {
+            "message_id": 8,
+            "from": {
+                "id": 441522292,
+                "is_bot": false,
+                "first_name": "Hongki",
+                "last_name": "Setiawan",
+                "username": "ongkii"
+            },
+            "chat": {
+                "id": -1002065173361,
+                "title": "Performa-Signal",
+                "is_forum": true,
+                "type": "supergroup"
+            },
+            "date": 1701389406,
+            "message_thread_id": 8,
+            "forum_topic_created": {
+                "name": "GFR Analysis",
+                "icon_color": 7322096
+            },
+            "is_topic_message": true
+        },
+        "text": "/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\nDate @ 20/05/2021 16:30\nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nTTime @ 19:16\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388",
+        "entities": [
+            {
+                "offset": 0,
+                "length": 6,
+                "type": "bot_command"
+            },
+            {
+                "offset": 33,
+                "length": 5,
+                "type": "mention"
+            }
+        ],
+        "is_topic_message": true
+    }
+}

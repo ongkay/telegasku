@@ -4,8 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "open": "clasp open",
     "push": "clasp push",
     "pushf": "clasp push -f",
+    "pushdeploy": "clasp push -f && clasp deploy --deploymentId AKfycbxeOeFauBWNfXyZd5_dnrT4Wycfjt7YbcuMQsHx1EAMZRDzlcWkeBjlakr4QGACxtCGhA",
     "pushw": "clasp push --watch ",
     "status": "clasp status",
     "newdeploy": "clasp deploy",

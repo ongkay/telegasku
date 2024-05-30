@@ -1,50 +1,77 @@
 // lumpia.DEBUG = true;
-lumpia.verbose = true
+lumpia.verbose = true;
 
-function testUser() {
-  Logger.log('semua data fineOne')
+function atest() {
+  Logger.log('ini adalah tester');
+  return 'fn atest berhasil gais';
+}
+
+function statusFilled(pesan) {
+  return {
+    status: 'filled',
+    pesan,
+  };
+}
+
+function statusSukses(data) {
+  return {
+    status: 'ok',
+    data,
+  };
 }
 
 bot.on('message', (ctx) => {
   // Explicit usage
-  let message = ctx.message
-  let textMessage = message.text
-  let chatid = message.chat.id
-  let replyText = message.reply_to_message?.text
-  let accFromGrup = message?.reply_to_message?.forum_topic_created?.name
+  let message = ctx.message;
+  let textMessage = message.text;
+  let chatid = message.chat.id;
+  let replyText = message.reply_to_message?.text;
+  let accFromGrup = message?.reply_to_message?.forum_topic_created?.name;
 
-  let data = parseMessage(message)
+  const dataPesan = parseMessage(message);
+  const dataFill = removeNullObj(alldata);
 
-  // ctx.replyIt(data)
+  const adaData = Object.keys(dataFill).length > 0;
 
-  function testUser(data) {
-    var db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8')
+  const data = {
+    ...dataPesan,
+    date: dataPesan.date !== '' ? `${dataPesan.date} ${dataPesan.time}` : '',
+  };
 
-    let akun = data.account
-    let dataFill = removeNullObj(data)
+  function inputData(data) {
+    const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
 
-    let columns = []
-    Logger.log(akun)
+    try {
+      const akun = data.account;
 
-    mapObj(dataFill, function (value, key) {
-      columns.push(key)
-    })
+      const columns = [];
+      mapObj(data, function (value, key) {
+        columns.push(key);
+      });
 
-    Logger.log(columns)
+      db.createSheetIfNotExists(akun, columns);
+      let userSheet = db.sheet(akun);
 
-    db.createSheetIfNotExists(akun, columns)
-    let userSheet = db.sheet(akun)
+      // insert satu data
+      userSheet.insert(data);
 
-    // insert satu data
-    userSheet.insert(dataFill)
+      // users = userSheet.find()
+      // Logger.log(users)
 
-    users = userSheet.find()
-    Logger.log('semua data fineOne')
-    Logger.log(users)
+      return statusSukses(data);
+    } catch (error) {
+      Logger.log(error.message);
+      return statusFilled(error.message);
+    }
   }
 
-  testUser(data)
-})
+  if (adaData) {
+    const input = inputData(data);
+    ctx.replyIt(input);
+  } else {
+    ctx.replyIt(textMessage);
+  }
+});
 
 function handleUpdate() {
   let update = {
@@ -104,14 +131,14 @@ function handleUpdate() {
       ],
       is_topic_message: true,
     },
-  }
+  };
 
-  bot.handleUpdate(update)
+  bot.handleUpdate(update);
 }
 
 // fungsi untuk memproses pesan user
 function handleUpdate2() {
-  let text1 = '/halo'
+  let text1 = '/halo';
 
   let update = {
     update_id: 708507416,
@@ -134,7 +161,7 @@ function handleUpdate2() {
       text: '/input\n#GGF\nXXAUUSD sell now @ 2367\ntp @ 2354\ntp2 @ 2334\n\nSL @ 2377',
       entities: [{ offset: 0, length: 6, type: 'bot_command' }],
     },
-  }
+  };
 
-  bot.handleUpdate(update)
+  bot.handleUpdate(update);
 }

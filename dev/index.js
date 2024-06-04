@@ -511,4 +511,51 @@ const datakedua = {
   date: dataadaisinya.date !== '' ? `${dataadaisinya.date} ${dataadaisinya.time}` : '',
 };
 
-console.log(datakedua);
+let balasPesan = [];
+let balasPesan2 = {};
+mapObj(datakedua, function (value, key) {
+  balasPesan.push(`${key} @ ${value}\n`);
+  // balasPesan[`${key}`] = value;
+});
+// console.log(JSON.stringify(dataadaisinya));
+console.log(balasPesan.toString().replace(/,/g, ''));
+
+function generateIdOld() {
+  let length = 8;
+  let password = '';
+  const chars = ['1234567890'];
+  for (let j = 0; j < chars.length; j++) {
+    password += chars[j].charAt(Math.floor(Math.random() * chars[j].length));
+  }
+  if (length > chars.length) {
+    length = length - chars.length;
+    for (let i = 0; i < length; i++) {
+      const index = Math.floor(Math.random() * chars.length);
+      password += chars[index].charAt(Math.floor(Math.random() * chars[index].length));
+    }
+  }
+  return password
+    .split('')
+    .sort(function () {
+      return 0.5 - Math.random();
+    })
+    .join('');
+}
+
+function generateId(name = '') {
+  name = name.toLowerCase();
+  if (name.match(/[^a-z]/g)) name = name.split(/[^a-z]/g)[0];
+
+  // Generate random 6-digit number
+  var randomNum = Math.floor(Math.random() * 900000) + 100000; // Ensure number starts with 2
+
+  // var uniqueID = name + '-' + randomNum;
+  var uniqueID = name + randomNum;
+
+  return uniqueID;
+}
+
+// Example usage
+var name = 'sdfs';
+var uniqueID = generateId();
+console.log(uniqueID); // Output: andi-237594

@@ -1,30 +1,40 @@
+const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
+
 function parseMessage(message) {
   let messageText = message?.text ?? message;
   let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
 
   const data = {
     cmd: null,
-    account: null,
-    status: null,
-    date: null,
-    time: null,
-    direction: null,
+    Account: null,
+    Status: null,
+    Date: null,
+    Time: null,
+    Direction: null,
     isWarning: false,
-    entry: null,
-    entry2nd: null,
-    take_profit_1: null,
-    take_profit_2: null,
-    take_profit_3: null,
-    take_profit_4: null,
-    take_profit_5: null,
-    TP_Partial: null,
-    stop_loss: null,
-    stop_loss_2: null,
-    news: null,
-    confirm: null,
-    note: null,
-    timeFrame: null,
-    urlPic: null,
+    Entry: null,
+    Entry_2: null,
+    TP_1: null,
+    TP_2: null,
+    TP_3: null,
+    TP_4: null,
+    TP_5: null,
+    TP_Half: null,
+    SL: null,
+    SL_2: null,
+    News: null,
+    Confirm: null,
+    Note: null,
+    Time_Frame: null,
+    URL_Pic: null,
+    Pair: null,
+    DD_Price: null,
+    Max_Price: null,
+    Ref: null,
+    BETP1: null,
+    Efib_Level: null,
+    Risk: null,
+    Date_close: null,
   };
 
   const regAngka = /\d+\.?\d*/;
@@ -50,7 +60,16 @@ function parseMessage(message) {
     }
 
     if (dataText.includes('#')) {
-      data.account = dataText.split('#')[1];
+      data.Account = dataText.split('#')[1];
+    }
+    if (!data.Pair) {
+      if (dataText == 'XAUUSD' || dataText == 'GOLD') {
+        data.Pair = 'XAUUSD';
+      } else {
+        dataPair.map((item) => {
+          dataText.includes(item) ? (data.Pair = item) : '';
+        });
+      }
     }
 
     if (
@@ -68,52 +87,78 @@ function parseMessage(message) {
     if (el.match(regSymbol)) {
       const dataSplit = el.toUpperCase().replace(regSymbol, '@');
 
+      if (dataSplit.includes('MAX')) {
+        let dataEntry = dataSplit.match(regAngka)[0];
+        data.Max_Price = Number(dataEntry);
+      }
+
+      if (dataSplit.includes('DD')) {
+        let dataEntry = dataSplit.match(regAngka)[0];
+        data.DD_Price = Number(dataEntry);
+      }
+
       if (dataSplit.includes('ENTRY')) {
         let dataEntry = dataSplit.match(regAngka)[0];
-        data.entry = Number(dataEntry);
+        data.Entry = Number(dataEntry);
       }
 
-      //entry2nd
+      //Entry_2
       if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
         const otherLimit = dataSplit.match(regAngka)[0];
-        data.entry2nd = Number(otherLimit);
+        data.Entry_2 = Number(otherLimit);
       }
 
-      // direction
+      // Direction
       if (dataSplit.includes('SELL')) {
-        data.direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
+        data.Direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
         let dataEntry = dataSplit.match(regAngka)[0];
-        data.entry = Number(dataEntry);
+        data.Entry = Number(dataEntry);
       } else if (dataSplit.includes('BUY')) {
-        data.direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
+        data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
       }
 
       if (dataSplit.includes('@')) {
         const splitAtt = dataSplit.split('@');
 
+        if (dataSplit.includes('BETP1')) {
+          data.BETP1 = splitAtt[1];
+        }
+
+        if (dataSplit.includes('EFIB')) {
+          data.Efib_Level = splitAtt[1];
+        }
+
+        if (dataSplit.includes('REF')) {
+          data.Ref = splitAtt[1];
+        }
+
+        if (dataSplit.includes('RISK')) {
+          data.Risk = splitAtt[1];
+        }
+
         if (dataSplit.includes('NOTE')) {
-          data.note = splitAtt[1].toLowerCase();
+          data.Note = splitAtt[1].toLowerCase();
         }
 
         if (dataSplit.includes('CONFIRM')) {
-          data.confirm = splitAtt[1].toLowerCase();
+          data.Confirm = splitAtt[1].toLowerCase();
         }
 
         if (dataSplit.includes('TF')) {
-          data.timeFrame = splitAtt[1].toLowerCase();
+          data.Time_Frame = splitAtt[1].toLowerCase();
         }
 
         if (dataSplit.includes('NEWS')) {
-          data.news = Number(splitAtt[1]);
+          data.News = Number(splitAtt[1]);
         }
         if (dataSplit.includes('STATUS')) {
-          data.status = splitAtt[1];
+          data.Status = splitAtt[1];
         }
 
         // TP, TPP, SL, Date
         if (dataSplit.includes('TP')) {
           if (dataSplit.includes('TPP')) {
-            data.TP_Partial = Number(splitAtt[1]);
+            data.TP_Half = Number(splitAtt[1]);
           } else {
             splitAtt.forEach((r) => {
               if (r.includes('TP')) {
@@ -124,16 +169,17 @@ function parseMessage(message) {
           }
         } else if (dataSplit.includes('SL')) {
           const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2')
-            ? (data.stop_loss_2 = slprice)
-            : (data.stop_loss = slprice);
+          dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
+        } else if (dataSplit.includes('DATE_CLOSE')) {
+          let tgl = splitAtt[1];
+          data.Date_close = getDateTime(parseDate(tgl));
         } else if (dataSplit.includes('DATE')) {
           let tgl = splitAtt[1];
-          let date = getDateTime(parseDate(tgl));
-          data.date = date.split(' ')[0];
-          data.time = date.split(' ')[1];
+          let Date = getDateTime(parseDate(tgl));
+          data.Date = Date.split(' ')[0];
+          data.Time = Date.split(' ')[1];
         } else if (dataSplit.includes('TIME')) {
-          data.time = splitAtt[1];
+          data.Time = splitAtt[1];
         }
       }
     }
@@ -144,12 +190,12 @@ function parseMessage(message) {
   if (allTp.length > 0) {
     allTp.map((item, i) => {
       let price = Number(item);
-      data[`take_profit_${i + 1}`] = price;
+      data[`TP_${i + 1}`] = price;
     });
   }
 
-  if (linkSS.length > 0) data.urlPic = linkSS;
-  if (!data.account) data.account = messageForumName;
+  if (linkSS.length > 0) data.URL_Pic = linkSS;
+  if (!data.Account) data.Account = messageForumName;
 
   return data;
 }

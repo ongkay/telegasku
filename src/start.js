@@ -1,11 +1,6 @@
 // lumpia.DEBUG = true;
 lumpia.verbose = true;
 
-function atest() {
-  Logger.log('ini adalah tester');
-  return 'fn atest berhasil gais';
-}
-
 function statusFilled(pesan) {
   return {
     status: 'filled',
@@ -20,6 +15,19 @@ function statusSukses(data) {
   };
 }
 
+function generateId(name = '') {
+  name = name.toLowerCase();
+  if (name.match(/[^a-z]/g)) name = name.split(/[^a-z]/g)[0];
+
+  // Generate random 6-digit number
+  var randomNum = Math.floor(Math.random() * 900000) + 100000; // Ensure number starts with 2
+
+  // var uniqueID = name + '-' + randomNum;
+  var uniqueID = name + randomNum;
+
+  return uniqueID;
+}
+
 bot.on('message', (ctx) => {
   // Explicit usage
   let message = ctx.message;
@@ -29,20 +37,64 @@ bot.on('message', (ctx) => {
   let accFromGrup = message?.reply_to_message?.forum_topic_created?.name;
 
   const dataPesan = parseMessage(message);
-  const dataFill = removeNullObj(alldata);
+  const dataFill = removeNullObj(dataPesan);
 
   const adaData = Object.keys(dataFill).length > 0;
 
+  const formatMessage = {
+    cmd: null,
+    Account: null,
+    Status: null,
+    Date: null,
+    Time: null,
+    Direction: null,
+    isWarning: false,
+    Entry: null,
+    Entry_2: null,
+    TP_1: null,
+    TP_2: null,
+    TP_3: null,
+    TP_4: null,
+    TP_5: null,
+    TP_Half: null,
+    SL: null,
+    SL_2: null,
+    News: null,
+    Confirm: null,
+    Note: null,
+    Time_Frame: null,
+    URL_Pic: null,
+    Pair: null,
+    DD_Price: null,
+    Max_Price: null,
+    Ref: null,
+    BETP1: null,
+    Efib_Level: null,
+    Risk: null,
+    Date_close: null,
+  };
+
   const data = {
+    _id: generateId(dataPesan.Account),
     ...dataPesan,
-    date: dataPesan.date !== '' ? `${dataPesan.date} ${dataPesan.time}` : '',
+    Date: dataPesan.Date !== '' ? `${dataPesan.Date} ${dataPesan.Time}` : '',
+    Session: null,
+    RR: null,
+    RRR: null,
+    Lot_Size: null,
+    Net_Profit: null,
+    Net_Pips: null,
+    Net_RR: null,
+    ROI: null,
+    Saldo: null,
+    Created: new Date(),
   };
 
   function inputData(data) {
     const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
 
     try {
-      const akun = data.account;
+      const akun = data.Account;
 
       const columns = [];
       mapObj(data, function (value, key) {
@@ -67,7 +119,19 @@ bot.on('message', (ctx) => {
 
   if (adaData) {
     const input = inputData(data);
-    ctx.replyIt(input);
+
+    if (input.status == 'ok') {
+      const inputSukses = removeNullObj(input.data);
+
+      let balasPesan = [];
+      mapObj(inputSukses, function (value, key) {
+        balasPesan.push(`${key} @ ${value}\n`);
+      });
+
+      let dikirim = balasPesan.toString().replace(/,/g, '');
+
+      ctx.replyIt(dikirim);
+    }
   } else {
     ctx.replyIt(textMessage);
   }

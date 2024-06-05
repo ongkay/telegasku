@@ -2,6 +2,9 @@
 lumpia.verbose = true;
 
 function statusFilled(pesan) {
+  Logger.log('status gagal');
+  Logger.log(pesan);
+
   return {
     status: 'filled',
     pesan,
@@ -9,6 +12,7 @@ function statusFilled(pesan) {
 }
 
 function statusSukses(data) {
+  Logger.log('status sukses');
   return {
     status: 'ok',
     data,
@@ -38,7 +42,6 @@ bot.on('message', (ctx) => {
 
   const dataPesan = parseMessage(message);
   const dataFill = removeNullObj(dataPesan);
-
   const adaData = Object.keys(dataFill).length > 0;
 
   const formatMessage = {
@@ -75,7 +78,6 @@ bot.on('message', (ctx) => {
   };
 
   const data = {
-    _id: generateId(dataPesan.Account),
     ...dataPesan,
     Date: dataPesan.Date !== '' ? `${dataPesan.Date} ${dataPesan.Time}` : '',
     Session: null,
@@ -105,18 +107,19 @@ bot.on('message', (ctx) => {
       let userSheet = db.sheet(akun);
 
       // insert satu data
-      userSheet.insert(data);
+      userSheet.insert({
+        _id: generateId(akun),
+        ...data,
+      });
 
       // users = userSheet.find()
       // Logger.log(users)
 
       return statusSukses(data);
     } catch (error) {
-      Logger.log(error.message);
       return statusFilled(error.message);
     }
   }
-
   if (adaData) {
     const input = inputData(data);
 
@@ -131,6 +134,8 @@ bot.on('message', (ctx) => {
       let dikirim = balasPesan.toString().replace(/,/g, '');
 
       ctx.replyIt(dikirim);
+    } else {
+      ctx.replyIt(input);
     }
   } else {
     ctx.replyIt(textMessage);
@@ -180,7 +185,7 @@ function handleUpdate() {
         },
         is_topic_message: true,
       },
-      text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 20/05/2021 16:30\nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nTTime @ 19:16\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388',
+      text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 20/05/2021 16:30\nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nTTime @ 19:16\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388 #GFT ',
       entities: [
         {
           offset: 0,

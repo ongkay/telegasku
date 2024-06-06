@@ -1,0 +1,42 @@
+{
+    "update_id": 708507685,
+    "message": {
+        "message_id": 1436,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1002065173361,
+            "title": "Performa-Signal",
+            "is_forum": true,
+            "type": "supergroup"
+        },
+        "date": 1717671201,
+        "message_thread_id": 7,
+        "reply_to_message": {
+            "message_id": 1431,
+            "from": {
+                "id": 7062989862,
+                "is_bot": true,
+                "first_name": "jurnaltradeku",
+                "username": "jurnaltradebot"
+            },
+            "chat": {
+                "id": -1002065173361,
+                "title": "Performa-Signal",
+                "is_forum": true,
+                "type": "supergroup"
+            },
+            "date": 1717670219,
+            "message_thread_id": 7,
+            "text": "_id @ wfr657685\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)",
+            "is_topic_message": true
+        },
+        "text": "dell",
+        "is_topic_message": true
+    }
+}

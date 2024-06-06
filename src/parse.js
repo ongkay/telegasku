@@ -1,6 +1,6 @@
-const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
-
 function parseMessage(message) {
+  const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
+
   let messageText = message?.text ?? message;
   let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
 
@@ -49,7 +49,7 @@ function parseMessage(message) {
   if (messageText.includes('\n')) {
     dataMessageText = messageText.split('\n');
   } else {
-    dataMessageText = [dataMessageText];
+    dataMessageText = [messageText];
   }
 
   dataMessageText.forEach((el) => {
@@ -119,6 +119,10 @@ function parseMessage(message) {
 
       if (dataSplit.includes('@')) {
         const splitAtt = dataSplit.split('@');
+
+        if (dataSplit.includes('_id')) {
+          data._id = splitAtt[1];
+        }
 
         if (dataSplit.includes('BETP1')) {
           data.BETP1 = splitAtt[1];

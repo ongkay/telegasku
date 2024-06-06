@@ -32,17 +32,48 @@ function generateId(name = '') {
   return uniqueID;
 }
 
+function inputData(data) {
+  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
+
+  try {
+    const akun = data.Account;
+
+    const columns = [];
+    mapObj(data, function (value, key) {
+      columns.push(key);
+    });
+
+    db.createSheetIfNotExists(akun, columns);
+    let userSheet = db.sheet(akun);
+
+    let dataInput = {
+      _id: generateId(akun),
+      ...data,
+    };
+
+    // insert satu data
+    userSheet.insert(dataInput);
+
+    // users = userSheet.find()
+    // Logger.log(users)
+
+    return statusSukses(dataInput);
+  } catch (error) {
+    return statusFilled(error.message);
+  }
+}
+
 bot.on('message', (ctx) => {
   // Explicit usage
   let message = ctx.message;
   let textMessage = message.text;
   let chatid = message.chat.id;
   let replyText = message.reply_to_message?.text;
-  let accFromGrup = message?.reply_to_message?.forum_topic_created?.name;
+  let account = message?.reply_to_message?.forum_topic_created?.name;
 
   const dataPesan = parseMessage(message);
   const dataFill = removeNullObj(dataPesan);
-  const adaData = Object.keys(dataFill).length > 0;
+  const adaData = Object.keys(dataFill).length > 1;
 
   const formatMessage = {
     cmd: null,
@@ -77,9 +108,37 @@ bot.on('message', (ctx) => {
     Date_close: null,
   };
 
+  if (replyText) {
+    let isEdit =
+      textMessage.includes('DEL') ||
+      textMessage.includes('dell') ||
+      textMessage.includes('Dell');
+
+    let isDellete =
+      textMessage.includes('EDIT') ||
+      textMessage.includes('edit') ||
+      textMessage.includes('Edit');
+
+    let data = parseStringToObject(replyText);
+
+    let idDb = replyText.match(/^_id @ (.*)\n/)[1];
+
+    Logger.log(data);
+    // Logger.log(dataPesan);
+    // Logger.log(idDb)
+
+    if (isDellete) {
+      ctx.replyIt('Dellet databaseS = ' + idDb);
+    } else if (isEdit) {
+      ctx.replyIt('EDIT databaseS = ' + idDb);
+    } else {
+      ctx.replyIt('Perintah replay hanya untuk edit atau dellete database saja');
+    }
+  }
+
   const data = {
     ...dataPesan,
-    Date: dataPesan.Date !== '' ? `${dataPesan.Date} ${dataPesan.Time}` : '',
+    Date: dataPesan.Date !== null ? `${dataPesan.Date} ${dataPesan.Time}` : '',
     Session: null,
     RR: null,
     RRR: null,
@@ -92,34 +151,6 @@ bot.on('message', (ctx) => {
     Created: new Date(),
   };
 
-  function inputData(data) {
-    const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
-
-    try {
-      const akun = data.Account;
-
-      const columns = [];
-      mapObj(data, function (value, key) {
-        columns.push(key);
-      });
-
-      db.createSheetIfNotExists(akun, columns);
-      let userSheet = db.sheet(akun);
-
-      // insert satu data
-      userSheet.insert({
-        _id: generateId(akun),
-        ...data,
-      });
-
-      // users = userSheet.find()
-      // Logger.log(users)
-
-      return statusSukses(data);
-    } catch (error) {
-      return statusFilled(error.message);
-    }
-  }
   if (adaData) {
     const input = inputData(data);
 
@@ -142,7 +173,7 @@ bot.on('message', (ctx) => {
   }
 });
 
-function handleUpdate() {
+function handleUpdate2() {
   let update = {
     update_id: 708507456,
     message: {
@@ -206,13 +237,11 @@ function handleUpdate() {
 }
 
 // fungsi untuk memproses pesan user
-function handleUpdate2() {
-  let text1 = '/halo';
-
+function handleUpdate() {
   let update = {
-    update_id: 708507416,
+    update_id: 708507685,
     message: {
-      message_id: 118,
+      message_id: 1436,
       from: {
         id: 6770187132,
         is_bot: false,
@@ -221,14 +250,34 @@ function handleUpdate2() {
         language_code: 'en',
       },
       chat: {
-        id: 6770187132,
-        first_name: 'setiawan',
-        username: 'ongtrade',
-        type: 'private',
+        id: -1002065173361,
+        title: 'Performa-Signal',
+        is_forum: true,
+        type: 'supergroup',
       },
-      date: 1715496211,
-      text: '/input\n#GGF\nXXAUUSD sell now @ 2367\ntp @ 2354\ntp2 @ 2334\n\nSL @ 2377',
-      entities: [{ offset: 0, length: 6, type: 'bot_command' }],
+      date: 1717671201,
+      message_thread_id: 7,
+      reply_to_message: {
+        message_id: 1431,
+        from: {
+          id: 7062989862,
+          is_bot: true,
+          first_name: 'jurnaltradeku',
+          username: 'jurnaltradebot',
+        },
+        chat: {
+          id: -1002065173361,
+          title: 'Performa-Signal',
+          is_forum: true,
+          type: 'supergroup',
+        },
+        date: 1717670219,
+        message_thread_id: 7,
+        text: '_id @ wfr657685\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)',
+        is_topic_message: true,
+      },
+      text: 'dell',
+      is_topic_message: true,
     },
   };
 

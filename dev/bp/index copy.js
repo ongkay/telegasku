@@ -152,7 +152,7 @@ function parseMessage2(message) {
   return data;
 }
 
-function parseMessage3(message) {
+function parseMessage(message) {
   let messageText = message?.text ?? message;
   let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
 
@@ -307,217 +307,6 @@ function parseMessage3(message) {
 
   return data;
 }
-function parseMessage(message) {
-  const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
-
-  let messageText = message?.text ?? message;
-  let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
-
-  console.log(messageText);
-  const data = {
-    cmd: null,
-    Account: null,
-    Status: null,
-    Date: null,
-    Time: null,
-    Direction: null,
-    isWarning: false,
-    Entry: null,
-    Entry_2: null,
-    TP_1: null,
-    TP_2: null,
-    TP_3: null,
-    TP_4: null,
-    TP_5: null,
-    TP_Half: null,
-    SL: null,
-    SL_2: null,
-    News: null,
-    Confirm: null,
-    Note: null,
-    Time_Frame: null,
-    URL_Pic: null,
-    Pair: null,
-    DD_Price: null,
-    Max_Price: null,
-    Ref: null,
-    BETP1: null,
-    Efib_Level: null,
-    Risk: null,
-    Date_close: null,
-  };
-
-  const regAngka = /\d+\.?\d*/;
-  const regSymbol = /[_@:-\s]+/;
-  const regexUrl =
-    /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|www\.){1}([0-9A-Za-z-\.@:%_\+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/g;
-
-  let linkSS = [];
-  let allTp = [];
-  let dataMessageText;
-
-  if (messageText.includes('\n')) {
-    dataMessageText = messageText.split('\n');
-    console.log(dataMessageText);
-  } else {
-    dataMessageText = [messageText];
-  }
-  console.log(dataMessageText[0].split('@')[1].trim());
-
-  dataMessageText.forEach((el) => {
-    console.log(el);
-  });
-
-  dataMessageText.forEach((el) => {
-    // dataMessageText.forEach((el) => {
-    const dataText = el.toUpperCase();
-
-    console.log(dataText);
-
-    if (el.match(regexUrl)) {
-      linkSS.push(el);
-    }
-
-    if (dataText.includes('#')) {
-      data.Account = dataText.split('#')[1];
-    }
-    if (!data.Pair) {
-      if (dataText == 'XAUUSD' || dataText == 'GOLD') {
-        data.Pair = 'XAUUSD';
-      } else {
-        dataPair.map((item) => {
-          dataText.includes(item) ? (data.Pair = item) : '';
-        });
-      }
-    }
-
-    if (
-      dataText.includes('/INPUT') ||
-      dataText.includes('/EDIT') ||
-      dataText.includes('/DEL')
-    ) {
-      data.cmd = dataText;
-    }
-
-    if (dataText.includes('WARN')) {
-      data.isWarning = true;
-    }
-
-    if (el.match(regSymbol)) {
-      const dataSplit = el.toUpperCase().replace(regSymbol, '@');
-
-      if (dataSplit.includes('MAX')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Max_Price = Number(dataEntry);
-      }
-
-      if (dataSplit.includes('DD')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.DD_Price = Number(dataEntry);
-      }
-
-      if (dataSplit.includes('ENTRY')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Entry = Number(dataEntry);
-      }
-
-      //Entry_2
-      if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
-        const otherLimit = dataSplit.match(regAngka)[0];
-        data.Entry_2 = Number(otherLimit);
-      }
-
-      // Direction
-      if (dataSplit.includes('SELL')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
-        // let dataEntry = dataSplit.match(regAngka)[0];
-        // data.Entry = Number(dataEntry);
-      } else if (dataSplit.includes('BUY')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
-      }
-
-      if (dataSplit.includes('@')) {
-        const splitAtt = dataSplit.split('@');
-
-        if (dataSplit.includes('BETP1')) {
-          data.BETP1 = splitAtt[1];
-        }
-
-        if (dataSplit.includes('EFIB')) {
-          data.Efib_Level = splitAtt[1];
-        }
-
-        if (dataSplit.includes('REF')) {
-          data.Ref = splitAtt[1];
-        }
-
-        if (dataSplit.includes('RISK')) {
-          data.Risk = splitAtt[1];
-        }
-
-        if (dataSplit.includes('NOTE')) {
-          data.Note = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('CONFIRM')) {
-          data.Confirm = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('TF')) {
-          data.Time_Frame = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('NEWS')) {
-          data.News = Number(splitAtt[1]);
-        }
-        if (dataSplit.includes('STATUS')) {
-          data.Status = splitAtt[1];
-        }
-
-        // TP, TPP, SL, Date
-        if (dataSplit.includes('TP')) {
-          if (dataSplit.includes('TPP')) {
-            data.TP_Half = Number(splitAtt[1]);
-          } else {
-            splitAtt.forEach((r) => {
-              if (r.includes('TP')) {
-              } else if (r.match(regAngka)) {
-                allTp.push(r);
-              }
-            });
-          }
-        } else if (dataSplit.includes('SL')) {
-          const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
-        } else if (dataSplit.includes('DATE_CLOSE')) {
-          let tgl = splitAtt[1];
-          data.Date_close = getDateTime(parseDate(tgl));
-        } else if (dataSplit.includes('DATE')) {
-          let tgl = splitAtt[1];
-          let Date = getDateTime(parseDate(tgl));
-          data.Date = Date.split(' ')[0];
-          data.Time = Date.split(' ')[1];
-        } else if (dataSplit.includes('TIME')) {
-          data.Time = splitAtt[1];
-        }
-      }
-    }
-  });
-
-  // add TP pride to data
-
-  if (allTp.length > 0) {
-    allTp.map((item, i) => {
-      let price = Number(item);
-      data[`TP_${i + 1}`] = price;
-    });
-  }
-
-  if (linkSS.length > 0) data.URL_Pic = linkSS;
-  if (!data.Account) data.Account = messageForumName;
-
-  return data;
-}
 
 // -========================================================================================================
 
@@ -563,10 +352,7 @@ let update = {
       },
       is_topic_message: true,
     },
-    // text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 22/03 \nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388',
-    // text: 'fgfgfgfgfgfg',
-    text: '_id @ wfr657685\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)',
-
+    text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 20/05/2021 16:30\nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nTTime @ 19:16\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388',
     entities: [
       {
         offset: 0,
@@ -591,22 +377,18 @@ console.log(parseMessage(update.message));
 //==================================================
 function parseDate(date = null, time = null) {
   const dateInputMentah = 'Date @ 20/05/2024 15:30';
-  // const dateInput = '20/05/2022 15:30';
-  const dateInput = '20/05/2022';
+  const dateInput = '20/05/2022 15:30';
 
   let d = new Date();
 
   if (date) {
     const dateSplit = date.split(' ');
-
     let alldate = dateSplit[0].split('/');
     d.setDate(alldate[0]);
     d.setMonth(alldate[1] - 1);
     alldate.length >= 3 ? d.setFullYear(alldate[2]) : null;
 
-    let jam = dateSplit[1];
-
-    if (dateSplit.length > 1 && jam !== '') {
+    if (dateSplit.length > 1) {
       let allTime = dateSplit[1].split(':');
       d.setHours(allTime[0]);
       d.setMinutes(allTime[1]);
@@ -729,46 +511,51 @@ const datakedua = {
   date: dataadaisinya.date !== '' ? `${dataadaisinya.date} ${dataadaisinya.time}` : '',
 };
 
-function parseStringToObject(dataString) {
-  // Split the data string into lines
-  var lines = dataString.split('\n');
+let balasPesan = [];
+let balasPesan2 = {};
+mapObj(datakedua, function (value, key) {
+  balasPesan.push(`${key} @ ${value}\n`);
+  // balasPesan[`${key}`] = value;
+});
+// console.log(JSON.stringify(dataadaisinya));
+console.log(balasPesan.toString().replace(/,/g, ''));
 
-  // Initialize an empty object to store data
-  var dataObject = {};
-
-  // Iterate through each line
-  for (var line of lines) {
-    // Split the line into key-value pair
-
-    let allLine = line.replace(/[@:-\s]+/, '@');
-    var parts = allLine.split('@');
-    if (parts.length === 2) {
-      // Extract key and value
-      var key = parts[0].trim(); // Remove leading and trailing spaces
-      var value = parts[1].trim(); // Remove leading and trailing spaces
-
-      // Convert key to lowercase for consistency
-      key = key.toLowerCase();
-
-      // Handle special cases for numeric values
-      if (['entry', 'tp_1', 'tp_2', 'tp_3', 'sl'].includes(key)) {
-        value = parseFloat(value); // Convert to number
-      } else if (key === 'iswarning') {
-        value = value.toLowerCase() === 'true'; // Convert to boolean
-      }
-
-      // Add key-value pair to the object
-      dataObject[key] = value;
+function generateIdOld() {
+  let length = 8;
+  let password = '';
+  const chars = ['1234567890'];
+  for (let j = 0; j < chars.length; j++) {
+    password += chars[j].charAt(Math.floor(Math.random() * chars[j].length));
+  }
+  if (length > chars.length) {
+    length = length - chars.length;
+    for (let i = 0; i < length; i++) {
+      const index = Math.floor(Math.random() * chars.length);
+      password += chars[index].charAt(Math.floor(Math.random() * chars[index].length));
     }
   }
+  return password
+    .split('')
+    .sort(function () {
+      return 0.5 - Math.random();
+    })
+    .join('');
+}
 
-  // Return the parsed data object
-  return dataObject;
+function generateId(name = '') {
+  name = name.toLowerCase();
+  if (name.match(/[^a-z]/g)) name = name.split(/[^a-z]/g)[0];
+
+  // Generate random 6-digit number
+  var randomNum = Math.floor(Math.random() * 900000) + 100000; // Ensure number starts with 2
+
+  // var uniqueID = name + '-' + randomNum;
+  var uniqueID = name + randomNum;
+
+  return uniqueID;
 }
 
 // Example usage
-var dataString =
-  '_id @ wfr657685\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)';
-
-var dataObject = parseStringToObject(dataString);
-console.log(dataObject);
+var name = 'sdfs';
+var uniqueID = generateId();
+console.log(uniqueID); // Output: andi-237594

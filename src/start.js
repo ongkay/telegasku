@@ -68,7 +68,7 @@ function getDataById(id, sheet) {
 
   try {
     let userSheet = db.sheet(sheet);
-    res = userSheet.find({
+    let res = userSheet.find({
       _id: {
         equal: id,
       },
@@ -78,6 +78,47 @@ function getDataById(id, sheet) {
   } catch (error) {
     return statusFilled(error.message);
   }
+}
+
+function deleteDataById(id, sheet) {
+  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
+
+  try {
+    let userSheet = db.sheet(sheet);
+
+    userSheet['delete']({
+      _id: id,
+    });
+
+    return statusSukses();
+  } catch (error) {
+    return statusFilled(error.message);
+  }
+}
+
+function updateDataById(id, newData, sheet) {
+  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
+
+  try {
+    let userSheet = db.sheet(sheet);
+
+    userSheet.update(id, newData);
+
+    return statusSukses(newData);
+  } catch (error) {
+    return statusFilled(error.message);
+  }
+}
+
+function parseObjToString(data) {
+  data = removeNullObj(data);
+
+  let res = [];
+  mapObj(data, function (value, key) {
+    res.push(`${key} @ ${value}\n`);
+  });
+
+  return res.toString().replace(/,/g, '');
 }
 
 bot.on('message', (ctx) => {
@@ -164,9 +205,25 @@ bot.on('message', (ctx) => {
     const getData = getDataById(id, account);
 
     if (isDel) {
-      ctx.replyIt('Dellet databaseS = ' + id);
+      const res = deleteDataById(id, account);
+      if (res.status == 'ok') {
+        ctx.replyIt('berhasil delet database ID : ' + id);
+      }
     } else if (isEdit) {
-      ctx.replyIt('EDIT databaseS = ' + id);
+      if (Object.keys(dataFill).length > 1) {
+        const res = updateDataById(id, dataFill, account);
+
+        if (res.status == 'ok') {
+          ctx.replyIt('sukses EDIT database ID = ' + id);
+          console.log('res.data');
+          console.log(res.data);
+
+          const datakirim = parseObjToString(res.data);
+          ctx.replyIt(`Updated\n\n${datakirim}`);
+        }
+      } else {
+        ctx.replyIt('GAGAL EDIT database ID = ' + id);
+      }
     } else {
       ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
     }
@@ -175,16 +232,8 @@ bot.on('message', (ctx) => {
       const input = inputData(data);
 
       if (input.status == 'ok') {
-        const inputSukses = removeNullObj(input.data);
-
-        let balasPesan = [];
-        mapObj(inputSukses, function (value, key) {
-          balasPesan.push(`${key} @ ${value}\n`);
-        });
-
-        let dikirim = balasPesan.toString().replace(/,/g, '');
-
-        ctx.replyIt(dikirim);
+        const datakirim = parseObjToString(input.data);
+        ctx.replyIt(datakirim);
       } else {
         ctx.replyIt(input);
       }
@@ -294,10 +343,10 @@ function handleUpdate() {
         },
         date: 1717670219,
         message_thread_id: 7,
-        text: '_id @ wfr657685\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)',
+        text: '_id @ wfr608536\nAccount @ WFR Analysis\nDate @ 25/04/2024 17:36\nTime @ 17:36\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)',
         is_topic_message: true,
       },
-      text: 'dell',
+      text: 'edit\nSL @ 454545454',
       is_topic_message: true,
     },
   };

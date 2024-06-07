@@ -63,6 +63,23 @@ function inputData(data) {
   }
 }
 
+function getDataById(id, sheet) {
+  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
+
+  try {
+    let userSheet = db.sheet(sheet);
+    res = userSheet.find({
+      _id: {
+        equal: id,
+      },
+    });
+
+    return statusSukses(res);
+  } catch (error) {
+    return statusFilled(error.message);
+  }
+}
+
 bot.on('message', (ctx) => {
   // Explicit usage
   let message = ctx.message;
@@ -71,9 +88,11 @@ bot.on('message', (ctx) => {
   let replyText = message.reply_to_message?.text;
   let account = message?.reply_to_message?.forum_topic_created?.name;
 
+  const dateNow = getDateTime(new Date());
+
   const dataPesan = parseMessage(message);
   const dataFill = removeNullObj(dataPesan);
-  const adaData = Object.keys(dataFill).length > 1;
+  const adaData = Object.keys(dataFill).length > 3;
 
   const formatMessage = {
     cmd: null,
@@ -108,37 +127,7 @@ bot.on('message', (ctx) => {
     Date_close: null,
   };
 
-  if (replyText) {
-    let isEdit =
-      textMessage.includes('DEL') ||
-      textMessage.includes('dell') ||
-      textMessage.includes('Dell');
-
-    let isDellete =
-      textMessage.includes('EDIT') ||
-      textMessage.includes('edit') ||
-      textMessage.includes('Edit');
-
-    let data = parseStringToObject(replyText);
-
-    let idDb = replyText.match(/^_id @ (.*)\n/)[1];
-
-    Logger.log(data);
-    // Logger.log(dataPesan);
-    // Logger.log(idDb)
-
-    if (isDellete) {
-      ctx.replyIt('Dellet databaseS = ' + idDb);
-    } else if (isEdit) {
-      ctx.replyIt('EDIT databaseS = ' + idDb);
-    } else {
-      ctx.replyIt('Perintah replay hanya untuk edit atau dellete database saja');
-    }
-  }
-
-  const data = {
-    ...dataPesan,
-    Date: dataPesan.Date !== null ? `${dataPesan.Date} ${dataPesan.Time}` : '',
+  const dataAuto = {
     Session: null,
     RR: null,
     RRR: null,
@@ -148,28 +137,60 @@ bot.on('message', (ctx) => {
     Net_RR: null,
     ROI: null,
     Saldo: null,
-    Created: new Date(),
+    Created: dateNow,
+  };
+  const data = {
+    ...dataPesan,
+    Date: dataPesan.Date !== null ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
+    Time: !dataPesan.Time ? dateNow.split(' ')[1] : dataPesan.Time,
+    ...dataAuto,
   };
 
-  if (adaData) {
-    const input = inputData(data);
+  if (replyText) {
+    let isDel =
+      textMessage.includes('DEL') ||
+      textMessage.includes('del') ||
+      textMessage.includes('Del');
 
-    if (input.status == 'ok') {
-      const inputSukses = removeNullObj(input.data);
+    let isEdit =
+      textMessage.includes('EDIT') ||
+      textMessage.includes('edit') ||
+      textMessage.includes('Edit');
 
-      let balasPesan = [];
-      mapObj(inputSukses, function (value, key) {
-        balasPesan.push(`${key} @ ${value}\n`);
-      });
+    let dataReplay = parseStringToObject(replyText);
+    let id = replyText.match(/^_id @ (.*)\n/)[1];
+    let account = dataReplay.account;
 
-      let dikirim = balasPesan.toString().replace(/,/g, '');
+    const getData = getDataById(id, account);
 
-      ctx.replyIt(dikirim);
+    if (isDel) {
+      ctx.replyIt('Dellet databaseS = ' + id);
+    } else if (isEdit) {
+      ctx.replyIt('EDIT databaseS = ' + id);
     } else {
-      ctx.replyIt(input);
+      ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
     }
   } else {
-    ctx.replyIt(textMessage);
+    if (adaData) {
+      const input = inputData(data);
+
+      if (input.status == 'ok') {
+        const inputSukses = removeNullObj(input.data);
+
+        let balasPesan = [];
+        mapObj(inputSukses, function (value, key) {
+          balasPesan.push(`${key} @ ${value}\n`);
+        });
+
+        let dikirim = balasPesan.toString().replace(/,/g, '');
+
+        ctx.replyIt(dikirim);
+      } else {
+        ctx.replyIt(input);
+      }
+    } else {
+      ctx.replyIt(textMessage);
+    }
   }
 });
 

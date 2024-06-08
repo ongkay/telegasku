@@ -133,16 +133,17 @@ bot.on('message', (ctx) => {
 
   const dataPesan = parseMessage(message);
   const dataFill = removeNullObj(dataPesan);
-  const adaData = Object.keys(dataFill).length > 3;
+  const adaData = Object.keys(dataFill).length > 2;
 
   const formatMessage = {
     cmd: null,
+    Pair: null,
     Account: null,
     Status: null,
     Date: null,
     Time: null,
     Direction: null,
-    isWarning: false,
+    isWarning: null,
     Entry: null,
     Entry_2: null,
     TP_1: null,
@@ -158,7 +159,6 @@ bot.on('message', (ctx) => {
     Note: null,
     Time_Frame: null,
     URL_Pic: null,
-    Pair: null,
     DD_Price: null,
     Max_Price: null,
     Ref: null,
@@ -181,8 +181,9 @@ bot.on('message', (ctx) => {
     Created: dateNow,
   };
   const data = {
+    ...formatMessage,
     ...dataPesan,
-    Date: dataPesan.Date !== null ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
+    Date: dataPesan.Date ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
     Time: !dataPesan.Time ? dateNow.split(' ')[1] : dataPesan.Time,
     ...dataAuto,
   };
@@ -202,27 +203,26 @@ bot.on('message', (ctx) => {
     let id = replyText.match(/^_id @ (.*)\n/)[1];
     let account = dataReplay.account;
 
-    const getData = getDataById(id, account);
+    // const getData = getDataById(id, account);
 
     if (isDel) {
       const res = deleteDataById(id, account);
       if (res.status == 'ok') {
-        ctx.replyIt('berhasil delet database ID : ' + id);
+        ctx.replyIt(`ID:${id} berhasil di hapus`);
       }
     } else if (isEdit) {
-      if (Object.keys(dataFill).length > 1) {
+      if (Object.keys(dataFill).length > 0) {
         const res = updateDataById(id, dataFill, account);
 
         if (res.status == 'ok') {
-          ctx.replyIt('sukses EDIT database ID = ' + id);
           console.log('res.data');
           console.log(res.data);
 
           const datakirim = parseObjToString(res.data);
-          ctx.replyIt(`Updated\n\n${datakirim}`);
+          ctx.replyIt(`Updated ID:${id}\n---------------------\n${datakirim}`);
         }
       } else {
-        ctx.replyIt('GAGAL EDIT database ID = ' + id);
+        ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
       }
     } else {
       ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
@@ -307,7 +307,7 @@ function handleUpdate2() {
 }
 
 // fungsi untuk memproses pesan user
-function handleUpdate() {
+function handleUpdateReplay() {
   let update = {
     update_id: 708507685,
     message: {

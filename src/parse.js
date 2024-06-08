@@ -4,38 +4,7 @@ function parseMessage(message) {
   let messageText = message?.text ?? message;
   let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
 
-  const data = {
-    cmd: null,
-    Account: null,
-    Status: null,
-    Date: null,
-    Time: null,
-    Direction: null,
-    isWarning: false,
-    Entry: null,
-    Entry_2: null,
-    TP_1: null,
-    TP_2: null,
-    TP_3: null,
-    TP_4: null,
-    TP_5: null,
-    TP_Half: null,
-    SL: null,
-    SL_2: null,
-    News: null,
-    Confirm: null,
-    Note: null,
-    Time_Frame: null,
-    URL_Pic: null,
-    Pair: null,
-    DD_Price: null,
-    Max_Price: null,
-    Ref: null,
-    BETP1: null,
-    Efib_Level: null,
-    Risk: null,
-    Date_close: null,
-  };
+  const data = {};
 
   const regAngka = /\d+\.?\d*/;
   const regSymbol = /[_@:-\s]+/;
@@ -97,11 +66,6 @@ function parseMessage(message) {
         data.DD_Price = Number(dataEntry);
       }
 
-      if (dataSplit.includes('ENTRY')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Entry = Number(dataEntry);
-      }
-
       //Entry_2
       if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
         const otherLimit = dataSplit.match(regAngka)[0];
@@ -115,10 +79,17 @@ function parseMessage(message) {
         data.Entry = Number(dataEntry);
       } else if (dataSplit.includes('BUY')) {
         data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
+        let dataEntry = dataSplit.match(regAngka)[0];
+        data.Entry = Number(dataEntry);
       }
 
       if (dataSplit.includes('@')) {
         const splitAtt = dataSplit.split('@');
+
+        if (splitAtt[0] == 'ENTRY') {
+          let dataEntry = dataSplit.match(regAngka)[0];
+          data.Entry = Number(dataEntry);
+        }
 
         if (dataSplit.includes('_id')) {
           data._id = splitAtt[1];
@@ -163,6 +134,16 @@ function parseMessage(message) {
         if (dataSplit.includes('TP')) {
           if (dataSplit.includes('TPP')) {
             data.TP_Half = Number(splitAtt[1]);
+          } else if (dataSplit.includes('TP1')) {
+            data.TP_1 = Number(splitAtt[1]);
+          } else if (dataSplit.includes('TP2')) {
+            data.TP_2 = Number(splitAtt[1]);
+          } else if (dataSplit.includes('TP3')) {
+            data.TP_3 = Number(splitAtt[1]);
+          } else if (dataSplit.includes('TP4')) {
+            data.TP_4 = Number(splitAtt[1]);
+          } else if (dataSplit.includes('TP5')) {
+            data.TP_5 = Number(splitAtt[1]);
           } else {
             splitAtt.forEach((r) => {
               if (r.includes('TP')) {
@@ -189,7 +170,7 @@ function parseMessage(message) {
     }
   });
 
-  // add TP pride to data
+  // add TP price to data
 
   if (allTp.length > 0) {
     allTp.map((item, i) => {
@@ -199,7 +180,7 @@ function parseMessage(message) {
   }
 
   if (linkSS.length > 0) data.URL_Pic = linkSS;
-  if (!data.Account) data.Account = messageForumName;
+  if (!data.Account && messageForumName) data.Account = messageForumName;
 
   return data;
 }

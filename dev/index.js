@@ -952,3 +952,16 @@ function parseStringToObject(dataString) {
   // Return the parsed data object
   return dataObject;
 }
+
+const regEntry = /^(ENTRY|OTHER|SELL LIMIT|BUY LIMIT|SELL NOW|BUY NOW)/i;
+
+const upperLine = 'sdf entry aja sdf';
+const reg = upperLine.match(regEntry);
+
+const regexCommand = /(DEL|EDIT|ed|Ed|del|Del|EDIT)/i;
+
+let isDel = /(DEL|DEL)/i.test('ini adalah dellet');
+let isEdit = /(EDIT)/i.test('ini adalah edit');
+let idFound = /(id)/i.test('_ID textMessage');
+console.log(isDel);
+console.log(idFound);

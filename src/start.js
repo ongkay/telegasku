@@ -70,49 +70,48 @@ bot.on('message', (ctx) => {
   };
 
   if (replyText) {
-    let isDel =
-      textMessage.includes('DEL') ||
-      textMessage.includes('del') ||
-      textMessage.includes('Del');
-
-    let isEdit =
-      textMessage.includes('EDIT') ||
-      textMessage.includes('edit') ||
-      textMessage.includes('Edit');
+    let isDel = /(DEL|DEL)/i.test(textMessage);
+    let isEdit = /(EDIT)/i.test(textMessage);
+    let idFound = /(id)/i.test(replyText);
 
     let dataReplay = parseStringToObject(replyText);
-    let id = replyText.match(/^_id : (.*)\n/)[1];
     let sheet = dataReplay.account;
 
-    // const getData = getDataById(id, account);
+    if (idFound && sheet) {
+      let id = replyText.match(/^_id : (.*)\n/)[1];
 
-    if (isDel) {
-      const res = deleteDataById(id, sheet);
-      if (res.status == 'ok') {
-        ctx.replyIt(`_id:${id} talah berhasil di hapus dari database`);
-      } else {
-        ctx.replyIt({ _id: id, ...res });
-      }
-    } else if (isEdit) {
-      if (Object.keys(dataFill).length > 0) {
-        const res = updateDataById(id, dataFill, sheet);
+      // const getData = getDataById(id, account);
 
+      if (isDel) {
+        const res = deleteDataById(id, sheet);
         if (res.status == 'ok') {
-          console.log('res.data');
-          console.log(res.data);
-
-          const datakirim = parseObjToString(res.data);
-          ctx.replyIt(
-            `_id:${id} \ntelah berhasil di Update\n---------------------\n${datakirim}`
-          );
+          ctx.replyIt(`_id:${id} talah berhasil di hapus dari database`);
         } else {
           ctx.replyIt({ _id: id, ...res });
         }
+      } else if (isEdit) {
+        if (Object.keys(dataFill).length > 0) {
+          const res = updateDataById(id, dataFill, sheet);
+
+          if (res.status == 'ok') {
+            console.log('res.data');
+            console.log(res.data);
+
+            const datakirim = parseObjToString(res.data);
+            ctx.replyIt(
+              `_id:${id} \ntelah berhasil di Update\n---------------------\n${datakirim}`
+            );
+          } else {
+            ctx.replyIt({ _id: id, ...res });
+          }
+        } else {
+          ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
+        }
       } else {
-        ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
+        ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
       }
     } else {
-      ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
+      ctx.replyIt('ID dan akun tidak di temukan, mungkin anda salah reply');
     }
   } else {
     if (adaData) {

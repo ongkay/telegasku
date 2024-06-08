@@ -1,125 +1,51 @@
 // lumpia.DEBUG = true;
 lumpia.verbose = true;
 
-function statusFilled(pesan) {
-  Logger.log('status gagal');
-  Logger.log(pesan);
+const formatMessage = {
+  cmd: null,
+  Pair: null,
+  Account: null,
+  Status: null,
+  Date: null,
+  Time: null,
+  Direction: null,
+  isWarning: null,
+  Entry: null,
+  Entry_2: null,
+  TP_1: null,
+  TP_2: null,
+  TP_3: null,
+  TP_4: null,
+  TP_5: null,
+  TP_Half: null,
+  SL: null,
+  SL_2: null,
+  News: null,
+  Confirm: null,
+  Note: null,
+  Time_Frame: null,
+  URL_Pic: null,
+  DD_Price: null,
+  Max_Price: null,
+  Ref: null,
+  BETP1: null,
+  Efib_Level: null,
+  Risk: null,
+  Date_close: null,
+};
 
-  return {
-    status: 'filled',
-    pesan,
-  };
-}
-
-function statusSukses(data) {
-  Logger.log('status sukses');
-  return {
-    status: 'ok',
-    data,
-  };
-}
-
-function generateId(name = '') {
-  name = name.toLowerCase();
-  if (name.match(/[^a-z]/g)) name = name.split(/[^a-z]/g)[0];
-
-  // Generate random 6-digit number
-  var randomNum = Math.floor(Math.random() * 900000) + 100000; // Ensure number starts with 2
-
-  // var uniqueID = name + '-' + randomNum;
-  var uniqueID = name + randomNum;
-
-  return uniqueID;
-}
-
-function inputData(data) {
-  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
-
-  try {
-    const akun = data.Account;
-
-    const columns = [];
-    mapObj(data, function (value, key) {
-      columns.push(key);
-    });
-
-    db.createSheetIfNotExists(akun, columns);
-    let userSheet = db.sheet(akun);
-
-    let dataInput = {
-      _id: generateId(akun),
-      ...data,
-    };
-
-    // insert satu data
-    userSheet.insert(dataInput);
-
-    // users = userSheet.find()
-    // Logger.log(users)
-
-    return statusSukses(dataInput);
-  } catch (error) {
-    return statusFilled(error.message);
-  }
-}
-
-function getDataById(id, sheet) {
-  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
-
-  try {
-    let userSheet = db.sheet(sheet);
-    let res = userSheet.find({
-      _id: {
-        equal: id,
-      },
-    });
-
-    return statusSukses(res);
-  } catch (error) {
-    return statusFilled(error.message);
-  }
-}
-
-function deleteDataById(id, sheet) {
-  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
-
-  try {
-    let userSheet = db.sheet(sheet);
-
-    userSheet['delete']({
-      _id: id,
-    });
-
-    return statusSukses();
-  } catch (error) {
-    return statusFilled(error.message);
-  }
-}
-
-function updateDataById(id, newData, sheet) {
-  const db = Dbsheet.init('1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8');
-
-  try {
-    let userSheet = db.sheet(sheet);
-
-    userSheet.update(id, newData);
-
-    return statusSukses(newData);
-  } catch (error) {
-    return statusFilled(error.message);
-  }
-}
-
-function parseObjToString(data) {
-  data = removeNullObj(data);
-
-  let res = [];
-  mapObj(data, function (value, key) {
-    res.push(`${key} @ ${value}\n`);
-  });
-
-  return res.toString().replace(/,/g, '');
-}
+const dataAuto = {
+  Session: null,
+  RR: null,
+  RRR: null,
+  Lot_Size: null,
+  Net_Profit: null,
+  Net_Pips: null,
+  Net_RR: null,
+  ROI: null,
+  Saldo: null,
+  Created: getDateTime(new Date()),
+};
 
 bot.on('message', (ctx) => {
   // Explicit usage
@@ -135,51 +61,6 @@ bot.on('message', (ctx) => {
   const dataFill = removeNullObj(dataPesan);
   const adaData = Object.keys(dataFill).length > 2;
 
-  const formatMessage = {
-    cmd: null,
-    Pair: null,
-    Account: null,
-    Status: null,
-    Date: null,
-    Time: null,
-    Direction: null,
-    isWarning: null,
-    Entry: null,
-    Entry_2: null,
-    TP_1: null,
-    TP_2: null,
-    TP_3: null,
-    TP_4: null,
-    TP_5: null,
-    TP_Half: null,
-    SL: null,
-    SL_2: null,
-    News: null,
-    Confirm: null,
-    Note: null,
-    Time_Frame: null,
-    URL_Pic: null,
-    DD_Price: null,
-    Max_Price: null,
-    Ref: null,
-    BETP1: null,
-    Efib_Level: null,
-    Risk: null,
-    Date_close: null,
-  };
-
-  const dataAuto = {
-    Session: null,
-    RR: null,
-    RRR: null,
-    Lot_Size: null,
-    Net_Profit: null,
-    Net_Pips: null,
-    Net_RR: null,
-    ROI: null,
-    Saldo: null,
-    Created: dateNow,
-  };
   const data = {
     ...formatMessage,
     ...dataPesan,
@@ -200,26 +81,32 @@ bot.on('message', (ctx) => {
       textMessage.includes('Edit');
 
     let dataReplay = parseStringToObject(replyText);
-    let id = replyText.match(/^_id @ (.*)\n/)[1];
-    let account = dataReplay.account;
+    let id = replyText.match(/^_id : (.*)\n/)[1];
+    let sheet = dataReplay.account;
 
     // const getData = getDataById(id, account);
 
     if (isDel) {
-      const res = deleteDataById(id, account);
+      const res = deleteDataById(id, sheet);
       if (res.status == 'ok') {
-        ctx.replyIt(`ID:${id} berhasil di hapus`);
+        ctx.replyIt(`_id:${id} talah berhasil di hapus dari database`);
+      } else {
+        ctx.replyIt({ _id: id, ...res });
       }
     } else if (isEdit) {
       if (Object.keys(dataFill).length > 0) {
-        const res = updateDataById(id, dataFill, account);
+        const res = updateDataById(id, dataFill, sheet);
 
         if (res.status == 'ok') {
           console.log('res.data');
           console.log(res.data);
 
           const datakirim = parseObjToString(res.data);
-          ctx.replyIt(`Updated ID:${id}\n---------------------\n${datakirim}`);
+          ctx.replyIt(
+            `_id:${id} \ntelah berhasil di Update\n---------------------\n${datakirim}`
+          );
+        } else {
+          ctx.replyIt({ _id: id, ...res });
         }
       } else {
         ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
@@ -238,7 +125,7 @@ bot.on('message', (ctx) => {
         ctx.replyIt(input);
       }
     } else {
-      ctx.replyIt(textMessage);
+      ctx.replyIt('Format yang anda masukkan salah');
     }
   }
 });

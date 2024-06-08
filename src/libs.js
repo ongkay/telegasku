@@ -1,3 +1,16 @@
+function parseObjToString(data) {
+  data = removeNullObj(data);
+
+  let res = [];
+  mapObj(data, function (value, key) {
+    res.push(`${key} : ${value}\n`);
+  });
+
+  return res.toString().replace(/,/g, '');
+}
+
+//---------------------------------------------
+//---------------------------------------------
 const removeNullObj = (obj) => {
   return Object.keys(obj).reduce((acc, current) => {
     if (obj[current] !== null) {

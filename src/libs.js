@@ -3,7 +3,7 @@ function parseObjToString(data) {
 
   let res = [];
   mapObj(data, function (value, key) {
-    res.push(`${key} : ${value}\n`);
+    res.push(`<b>${key}</b> : <code>${value}</code>\n`);
   });
 
   return res.toString().replace(/,/g, '');

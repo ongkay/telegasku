@@ -553,7 +553,7 @@ function parseMessage(message) {
       data.Account = dataText.split('#')[1];
     }
     if (!data.Pair) {
-      if (dataText == 'XAUUSD' || dataText == 'GOLD') {
+      if (/(gold|xau)/i.test(dataText)) {
         data.Pair = 'XAUUSD';
       } else {
         dataPair.map((item) => {
@@ -562,11 +562,7 @@ function parseMessage(message) {
       }
     }
 
-    if (
-      dataText.includes('/INPUT') ||
-      dataText.includes('/EDIT') ||
-      dataText.includes('/DEL')
-    ) {
+    if (/\/(INPUT|EDIT|DEL)/i.test(dataText)) {
       data.cmd = dataText;
     }
 
@@ -595,11 +591,15 @@ function parseMessage(message) {
 
       // Direction
       if (dataSplit.includes('SELL')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
+        const isLimit = dataSplit.includes('LIMIT');
+        const isStop = dataSplit.includes('STOP');
+        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
         let dataEntry = dataSplit.match(regAngka)[0];
         data.Entry = Number(dataEntry);
       } else if (dataSplit.includes('BUY')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
+        const isLimit = dataSplit.includes('LIMIT');
+        const isStop = dataSplit.includes('STOP');
+        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
         let dataEntry = dataSplit.match(regAngka)[0];
         data.Entry = Number(dataEntry);
       }
@@ -750,7 +750,7 @@ let update = {
       },
       is_topic_message: true,
     },
-    text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 22/03 \nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nXAUUSD sell now @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388',
+    text: '/input\nhttps://i.imgur.com/SUoBTZR.png\nhttps://imgur.com/screenshot-SUoBTZR\n#GTR\nDate @ 22/03 \nnote @ Ini adalah note\nconfirm @ CB1 M5\nstatus @ running\ntf @ m15\nnews @ 3\nGold sell limit @ 2367\nwarning\nOther limit @ 2339\ntp : 2351\ntp   @ 2332\ntp 2333\ntp4@2334\ntpp : 2021\n\nTp5_________________2555\n\nSL @ 2377.88\nSL2 @ 2388',
     // text: 'fgfgfgfgfgfg',
     // text: '_id @ wfr657685\nAccount @ WFR Analysis\nDirection @ SELL NOW\nisWarning @ true\nEntry @ 2367\nTP_1 @ 2354\nTP_2 @ 2334\nTP_3 @ 2339\nSL @ 2377\nConfirm @ cb1 m30\nNote @ oke juga ini adalah note\nPair @ XAUUSD\nCreated @ Thu Jun 06 2024 17:36:57 GMT+0700 (Western Indonesia Time)',
 

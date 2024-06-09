@@ -1,0 +1,63 @@
+{
+    "update_id": 708507775,
+    "message": {
+        "message_id": 1637,
+        "from": {
+            "id": 6770187132,
+            "is_bot": false,
+            "first_name": "setiawan",
+            "username": "ongtrade",
+            "language_code": "en"
+        },
+        "chat": {
+            "id": -1002065173361,
+            "title": "Performa-Signal",
+            "is_forum": true,
+            "type": "supergroup"
+        },
+        "date": 1717853609,
+        "message_thread_id": 7,
+        "reply_to_message": {
+            "message_id": 7,
+            "from": {
+                "id": 441522292,
+                "is_bot": false,
+                "first_name": "Hongki",
+                "last_name": "Setiawan",
+                "username": "ongkii"
+            },
+            "chat": {
+                "id": -1002065173361,
+                "title": "Performa-Signal",
+                "is_forum": true,
+                "type": "supergroup"
+            },
+            "date": 1701389380,
+            "message_thread_id": 7,
+            "forum_topic_created": {
+                "name": "WFR Analysis",
+                "icon_color": 7322096
+            },
+            "is_topic_message": true
+        },
+        "text": "NEW ORDER - XAUUSDz Buy Limit 📈\n# 16601549\n\n{ NEW }\nEntry: 2346.473\nSL:    2344.050 [24.23 Pips]\nTP:    2371.540 [250.67 Pips]\nRR:    10.35\n-\n-\n📝 Comment: MK\n\ndebug",
+        "entities": [
+            {
+                "offset": 43,
+                "length": 99,
+                "type": "code"
+            },
+            {
+                "offset": 142,
+                "length": 2,
+                "type": "code"
+            },
+            {
+                "offset": 157,
+                "length": 9,
+                "type": "italic"
+            }
+        ],
+        "is_topic_message": true
+    }
+}

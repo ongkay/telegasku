@@ -49,82 +49,104 @@ const dataAuto = {
 
 bot.on('message', (ctx) => {
   // Explicit usage
+  let debugText = ctx.update;
   let message = ctx.message;
   let textMessage = message.text;
-  let chatid = message.chat.id;
+  let chatId = message.chat.id;
   let replyText = message.reply_to_message?.text;
   let account = message?.reply_to_message?.forum_topic_created?.name;
 
-  const dateNow = getDateTime(new Date());
+  if (/(debug)/i.test(textMessage)) {
+    console.log('ini adalah debug');
+    ctx.replyIt(debugText);
 
-  const dataPesan = parseMessage(message);
-  const dataFill = removeNullObj(dataPesan);
-  const adaData = Object.keys(dataFill).length > 2;
+    html_message = `
+    < b > Bold text</b >
+    <i>Italicized text</i>
+    <a href="https://www.google.com">Link to Google</a>
+    <blockquote>
+    This is an example quote.
+    </blockquote>`;
 
-  const data = {
-    ...formatMessage,
-    ...dataPesan,
-    Date: dataPesan.Date ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
-    Time: !dataPesan.Time ? dateNow.split(' ')[1] : dataPesan.Time,
-    ...dataAuto,
-  };
+    ctx.replyIt(
+      `<blockquote>penggunaan:\n<code>/sholat lokasi(kab/kota)</code>\n\ncontoh:\n<code>/sholat sleman</code>\n<a href='https://www.google.com'>Link to Google</a></blockquote>`,
+      { parse_mode: 'HTML' }
+    );
+    // ctx.replyIt(html_message, { parse_mode: "HTML" })
+  } else {
+    const dateNow = getDateTime(new Date());
 
-  if (replyText) {
-    let isDel = /(DEL|DEL)/i.test(textMessage);
-    let isEdit = /(EDIT)/i.test(textMessage);
-    let idFound = /(id)/i.test(replyText);
+    const dataPesan = parseMessage(message);
+    const dataFill = removeNullObj(dataPesan);
+    const adaData = Object.keys(dataFill).length > 2;
 
-    let dataReplay = parseStringToObject(replyText);
-    let sheet = dataReplay.account;
+    const data = {
+      ...formatMessage,
+      ...dataPesan,
+      Date: dataPesan.Date ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
+      Time: !dataPesan.Time ? dateNow.split(' ')[1] : dataPesan.Time,
+      ...dataAuto,
+    };
 
-    if (idFound && sheet) {
-      let id = replyText.match(/^_id : (.*)\n/)[1];
+    if (replyText) {
+      let isDel = /(DEL|DEL)/i.test(textMessage);
+      let isEdit = /(EDIT)/i.test(textMessage);
+      let idFound = /(id)/i.test(replyText);
 
-      // const getData = getDataById(id, account);
+      let dataReplay = parseStringToObject(replyText);
+      let sheet = dataReplay.account;
 
-      if (isDel) {
-        const res = deleteDataById(id, sheet);
-        if (res.status == 'ok') {
-          ctx.replyIt(`_id:${id} talah berhasil di hapus dari database`);
-        } else {
-          ctx.replyIt({ _id: id, ...res });
-        }
-      } else if (isEdit) {
-        if (Object.keys(dataFill).length > 0) {
-          const res = updateDataById(id, dataFill, sheet);
+      if (idFound && sheet) {
+        let id = replyText.match(/^_id : (.*)\n/)[1];
 
+        // const getData = getDataById(id, account);
+
+        if (isDel) {
+          const res = deleteDataById(id, sheet);
           if (res.status == 'ok') {
-            console.log('res.data');
-            console.log(res.data);
-
-            const datakirim = parseObjToString(res.data);
-            ctx.replyIt(
-              `_id:${id} \ntelah berhasil di Update\n---------------------\n${datakirim}`
-            );
+            ctx.replyItWithHTML(`#<code>${id}</code>\n berhasil di hapus dari database`);
           } else {
             ctx.replyIt({ _id: id, ...res });
           }
+        } else if (isEdit) {
+          if (Object.keys(dataFill).length > 0) {
+            const res = updateDataById(id, dataFill, sheet);
+
+            if (res.status == 'ok') {
+              console.log('res.data');
+              console.log(res.data);
+
+              const datakirim = parseObjToString(res.data);
+
+              ctx.replyItWithHTML(
+                `#<code>${id}</code>\n database berhasi di update\n---------------------\n${datakirim}`
+              );
+            } else {
+              ctx.replyIt({ _id: id, ...res });
+            }
+          } else {
+            ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
+          }
         } else {
-          ctx.replyIt('GAGAL EDIT id:' + id + ' karena datafill kurang dari 1');
+          ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
         }
       } else {
-        ctx.replyIt('Perintah replay hanya untuk edit atau delete database saja');
+        ctx.replyIt('ID dan akun tidak di temukan, mungkin anda salah reply');
       }
     } else {
-      ctx.replyIt('ID dan akun tidak di temukan, mungkin anda salah reply');
-    }
-  } else {
-    if (adaData) {
-      const input = inputData(data);
+      if (adaData) {
+        const input = inputData(data);
 
-      if (input.status == 'ok') {
-        const datakirim = parseObjToString(input.data);
-        ctx.replyIt(datakirim);
+        if (input.status == 'ok') {
+          const datakirim = parseObjToString(input.data);
+          // ctx.replyIt(datakirim, { parse_mode: 'HTML' });
+          ctx.replyItWithHTML(datakirim);
+        } else {
+          ctx.replyIt(input);
+        }
       } else {
-        ctx.replyIt(input);
+        ctx.replyIt('Format yang anda masukkan salah');
       }
-    } else {
-      ctx.replyIt('Format yang anda masukkan salah');
     }
   }
 });

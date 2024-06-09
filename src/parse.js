@@ -32,7 +32,7 @@ function parseMessage(message) {
       data.Account = dataText.split('#')[1];
     }
     if (!data.Pair) {
-      if (dataText == 'XAUUSD' || dataText == 'GOLD') {
+      if (/(gold|xau)/i.test(dataText)) {
         data.Pair = 'XAUUSD';
       } else {
         dataPair.map((item) => {
@@ -41,11 +41,7 @@ function parseMessage(message) {
       }
     }
 
-    if (
-      dataText.includes('/INPUT') ||
-      dataText.includes('/EDIT') ||
-      dataText.includes('/DEL')
-    ) {
+    if (/\/(INPUT|EDIT|DEL)/i.test(dataText)) {
       data.cmd = dataText;
     }
 
@@ -74,11 +70,15 @@ function parseMessage(message) {
 
       // Direction
       if (dataSplit.includes('SELL')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
+        const isLimit = dataSplit.includes('LIMIT');
+        const isStop = dataSplit.includes('STOP');
+        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
         let dataEntry = dataSplit.match(regAngka)[0];
         data.Entry = Number(dataEntry);
       } else if (dataSplit.includes('BUY')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
+        const isLimit = dataSplit.includes('LIMIT');
+        const isStop = dataSplit.includes('STOP');
+        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
         let dataEntry = dataSplit.match(regAngka)[0];
         data.Entry = Number(dataEntry);
       }

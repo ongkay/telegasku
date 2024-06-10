@@ -136,83 +136,12 @@ bot.on('message', (ctx) => {
     } else {
       if (adaData) {
         const input = inputData(data);
+        const res = input.data;
 
         if (input.status == 'ok') {
-          const res = input.data;
-
           const datakirim = parseObjToString(input.data);
+          // ctx.replyIt(datakirim, { parse_mode: 'HTML' });
           ctx.replyItWithHTML(datakirim);
-
-          let date = res.Date;
-          let direction = res.Direction;
-          let isWarning = res.isWarning;
-          let id = res._id;
-          let pair = res.Pair;
-          let entry = res.Entry;
-          let entry2 = res.Entry_2;
-          let tp1 = res.TP_1;
-          let tp2 = res.TP_2;
-          let tp3 = res.TP_3;
-          let tp4 = res.TP_4;
-          let tp5 = res.TP_5;
-          let sl = res.SL;
-          let sl2 = res.SL_2;
-
-          let riskPip1 = getCountPips(entry, sl, pair);
-          let riskPip2 = sl2 ? getCountPips(entry, sl2, pair) : null;
-          let tpPip1 = getCountPips(entry, tp1, pair);
-          let tpPip2 = getCountPips(entry, tp2, pair);
-          let tpPip3 = getCountPips(entry, tp3, pair);
-          let tpPip4 = getCountPips(entry, tp4, pair);
-          let tpPip5 = getCountPips(entry, tp5, pair);
-
-          let loss1 = getCountProfit(riskPip1, 0.01, pair);
-          let loss2 = getCountProfit(riskPip2, 0.01, pair);
-          let win1 = getCountProfit(tpPip1, 0.01, pair);
-          let win2 = getCountProfit(tpPip2, 0.01, pair);
-          let win3 = getCountProfit(tpPip3, 0.01, pair);
-          let win4 = getCountProfit(tpPip4, 0.01, pair);
-          let win5 = getCountProfit(tpPip5, 0.01, pair);
-
-          let winR1 = getRR(riskPip1, tpPip1);
-          let winR2 = getRR(riskPip1, tpPip2, riskPip2);
-          let winR3 = getRR(riskPip1, tpPip3, riskPip2);
-          let winR4 = getRR(riskPip1, tpPip4, riskPip2);
-          let winR5 = getRR(riskPip1, tpPip5, riskPip2);
-
-          const kirimtele =
-            `#<code>${id}</code>\n\n` +
-            `${date}\n` +
-            `${pair} ${direction} \n\n` +
-            `Entry: <code>${entry}</code> ${isWarning ? '⚠️' : ''}\n` +
-            `SL:      <code>${sl}</code> 👉 <code>${riskPip1} Pips</code>, <code>$${loss1}</code> \n` +
-            `${
-              tp2 ? 'TP1' : 'TP'
-            }:   <code>${tp1}</code> 👉 <code>${tpPip1} Pips</code>, <code>${winR1}R</code>\n` +
-            `${
-              tp2
-                ? `TP2:   <code>${tp2}</code> 👉 <code>${tpPip2} Pips</code>, <code>${winR2}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp3
-                ? `TP3:   <code>${tp3}</code> 👉 <code>${tpPip3} Pips</code>, <code>${winR3}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp4
-                ? `TP2:   <code>${tp4}</code> 👉 <code>${tpPip4} Pips</code>, <code>${winR4}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp5
-                ? `TP2:   <code>${tp5}</code> 👉 <code>${tpPip5}Pips</code>, <code>${winR5}R</code>\n`
-                : ''
-            }` +
-            `\n---------------------------------`;
-          // `${tp2 ? 'TP1' : 'TP'} : <code>${tp1}</code> [${tpPip1}Pips]$ ${win1}`
-
-          ctx.replyItWithHTML(kirimtele);
         } else {
           ctx.replyIt(input);
         }

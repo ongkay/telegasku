@@ -953,15 +953,60 @@ function parseStringToObject(dataString) {
   return dataObject;
 }
 
-const regEntry = /^(ENTRY|OTHER|SELL LIMIT|BUY LIMIT|SELL NOW|BUY NOW)/i;
+//===============================================
 
-const upperLine = 'sdf entry aja sdf';
-const reg = upperLine.match(regEntry);
+const dataPair = {
+  xauusd: {
+    point: 100,
+    price: 10,
+    majorPair: true,
+  },
+  usdjpy: {
+    point: 10000,
+    price: 10,
+    majorPair: true,
+  },
+  gbpjpy: {
+    point: 100,
+    price: 20,
+    majorPair: true,
+  },
+};
 
-const regexCommand = /(DEL|EDIT|ed|Ed|del|Del|EDIT)/i;
+function getCountPips(priceA, priceB, pair = 'XAUUSD') {
+  pair = pair.toLowerCase();
+  const data = dataPair[pair];
 
-let isDel = /(DEL|DEL)/i.test('ini adalah dellet');
-let isEdit = /(EDIT)/i.test('ini adalah edit');
-let idFound = /(id)/i.test('_ID textMessage');
-console.log(isDel);
-console.log(idFound);
+  let points = Math.abs(priceA - priceB) * data.point;
+
+  let pips = points / 10;
+
+  return Math.round(pips * 100) / 100;
+}
+
+function getCountProfit(pips, lotSize = 0.01, pair = 'XAUUSD') {
+  pair = pair.toLowerCase();
+  const data = dataPair[pair];
+  let res = pips * lotSize * data.price;
+  return Math.round(res * 100) / 100;
+}
+
+function getRR(risk1, reward, risk2 = null) {
+  let risk = 1;
+
+  if (risk2) {
+    let riskPlus = risk2 / risk1;
+    risk = Math.abs(riskPlus);
+  }
+  let r = Math.round(Math.abs(reward / risk1) * 10) / 10;
+  return `${risk}:${r}`;
+}
+
+console.log(getRR(25, 63, undefined));
+console.log(getCountPips(2340, 2337.5));
+console.log(getCountProfit(getCountPips(2253.38, 2278.04)));
+
+const angka = 25.877878745;
+const bulat = Math.round(angka * 100) / 100; // 2angka setelah koma
+
+console.log(bulat);

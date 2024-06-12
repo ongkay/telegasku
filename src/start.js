@@ -89,15 +89,19 @@ bot.on('message', (ctx) => {
     };
 
     if (replyText) {
+      let regID = /^#(.*\d+)/;
       let isDel = /(DEL|DEL)/i.test(textMessage);
       let isEdit = /(EDIT)/i.test(textMessage);
-      let idFound = /(id)/i.test(replyText);
+      let idFound = regID.test(replyText);
 
-      let dataReplay = parseStringToObject(replyText);
-      let sheet = dataReplay.account;
+      // let dataReplay = parseStringToObject(replyText);
+      let sheet = 'allDB';
+
+      ctx.replyIt(replyText.match(regID)[1]);
 
       if (idFound && sheet) {
-        let id = replyText.match(/^_id : (.*)\n/)[1];
+        // let id = replyText.match(/^_id : (.*)\n/)[1];
+        let id = replyText.match(regID)[1];
 
         // const getData = getDataById(id, account);
 
@@ -158,59 +162,136 @@ bot.on('message', (ctx) => {
           let sl = res.SL;
           let sl2 = res.SL_2;
 
-          let riskPip1 = getCountPips(entry, sl, pair);
-          let riskPip2 = sl2 ? getCountPips(entry, sl2, pair) : null;
-          let tpPip1 = getCountPips(entry, tp1, pair);
-          let tpPip2 = getCountPips(entry, tp2, pair);
-          let tpPip3 = getCountPips(entry, tp3, pair);
-          let tpPip4 = getCountPips(entry, tp4, pair);
-          let tpPip5 = getCountPips(entry, tp5, pair);
+          const pl = getAlltWinLose({
+            entry,
+            sl,
+            sl2,
+            tp1,
+            tp2,
+            tp3,
+            pair,
+          });
 
-          let loss1 = getCountProfit(riskPip1, 0.01, pair);
-          let loss2 = getCountProfit(riskPip2, 0.01, pair);
-          let win1 = getCountProfit(tpPip1, 0.01, pair);
-          let win2 = getCountProfit(tpPip2, 0.01, pair);
-          let win3 = getCountProfit(tpPip3, 0.01, pair);
-          let win4 = getCountProfit(tpPip4, 0.01, pair);
-          let win5 = getCountProfit(tpPip5, 0.01, pair);
+          function dataEntry2(e) {
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `SL:      <code>${sl}</code> 👉 <code>${pl.pipsSl}P</code>, <code>$${pl.dollarSl}</code> \n` +
+              `${tp2 ? 'TP1' : 'TP'}:   <code>${tp1}</code> 👉 <code>${pl.pipsTp1}P</code>, <code>${
+                pl.rrTp1
+              }R</code>\n` +
+              `${tp2 ? `TP2:   <code>${tp2}</code> 👉 <code>${pl.pipsTp2}P</code>, <code>${pl.rrTp2}R</code>\n` : ''}` +
+              `${tp3 ? `TP3:   <code>${tp3}</code> 👉 <code>${pl.pipsTp3}P</code>, <code>${pl.rrTp3}R</code>\n` : ''}` +
+              `${tp4 ? `TP4:   <code>${tp4}</code> 👉 <code>${pl.pipsTp4}P</code>, <code>${pl.rrTp4}R</code>\n` : ''}` +
+              `${tp5 ? `TP5:   <code>${tp5}</code> 👉 <code>${pl.pipsTp5}P</code>, <code>${pl.rrTp5}R</code>\n` : ''}` +
+              `\n---------------------------------`;
 
-          let winR1 = getRR(riskPip1, tpPip1);
-          let winR2 = getRR(riskPip1, tpPip2, riskPip2);
-          let winR3 = getRR(riskPip1, tpPip3, riskPip2);
-          let winR4 = getRR(riskPip1, tpPip4, riskPip2);
-          let winR5 = getRR(riskPip1, tpPip5, riskPip2);
+            return data;
+          }
+
+          function dataEntry3(e) {
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `${tp2 ? 'TP1' : 'TP'}:   <code>${tp1}</code> 👉 <code>${pl.pipsTp1.toFixed()}P</code>, <code>${
+                pl.rrTp1.split(':')[1]
+              }R</code>, <code>$${Math.round(pl.dollarTp1 * 10) / 10}</code>\n` +
+              `${
+                tp2
+                  ? `TP2:   <code>${tp2}</code> 👉 <code>${pl.pipsTp2.toFixed()}P</code>, <code>${
+                      pl.rrTp2.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp2 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp3
+                  ? `TP3:   <code>${tp3}</code> 👉 <code>${pl.pipsTp3.toFixed()}P</code>, <code>${
+                      pl.rrTp3.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp3 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp4
+                  ? `TP4:   <code>${tp4}</code> 👉 <code>${pl.pipsTp4.toFixed()}P</code>, <code>${
+                      pl.rrTp4.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp4 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp5
+                  ? `TP5:   <code>${tp5}</code> 👉 <code>${pl.pipsTp5.toFixed()}P</code>, <code>${
+                      pl.rrTp5.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp5 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `SL:      <code>${sl}</code> 👉 <code>${pl.pipsSl.toFixed()}P</code>, <code>-${
+                pl.rrTp1.split(':')[0]
+              }R</code>, <code>$${Math.round(pl.dollarSl * 10) / 10}</code> \n` +
+              `${
+                !sl2
+                  ? ''
+                  : `SL2:     <code>${sl}</code> 👉 <code>${pl.pipsSl2.toFixed()}P</code>, <code>-${
+                      pl.rrTp1.split(':')[0]
+                    }R</code>, <code>$${Math.round(pl.dollarSl2 * 10) / 10}</code> \n`
+              }`;
+
+            return data;
+          }
+
+          function dataEntry(e) {
+            const slsatu = `SL: <code>${sl}</code> 👉 <code>${pl.pipsSl.toFixed()}P</code>, <code>${
+              pl.rrTp1.split(':')[0]
+            }R</code>, <code>$${Math.round(pl.dollarSl * 10) / 10}</code> \n`;
+
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `${tp2 ? 'TP1' : 'TP'}: <code>${tp1}</code> 👉 <code>${pl.pipsTp1.toFixed()}P</code>, <code>${
+                pl.rrTp1.split(':')[1]
+              }R</code>, <code>$${Math.round(pl.dollarTp1 * 10) / 10}</code>\n` +
+              `${
+                tp2
+                  ? `TP2: <code>${tp2}</code> 👉 <code>${pl.pipsTp2.toFixed()}P</code>, <code>${
+                      pl.rrTp2.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp2 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp3
+                  ? `TP3: <code>${tp3}</code> 👉 <code>${pl.pipsTp3.toFixed()}P</code>, <code>${
+                      pl.rrTp3.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp3 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp4
+                  ? `TP4: <code>${tp4}</code> 👉 <code>${pl.pipsTp4.toFixed()}P</code>, <code>${
+                      pl.rrTp4.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp4 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp5
+                  ? `TP5: <code>${tp5}</code> 👉 <code>${pl.pipsTp5.toFixed()}P</code>, <code>${
+                      pl.rrTp5.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp5 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                !sl2
+                  ? slsatu
+                  : `<s>${slsatu}</s>` +
+                    `SL2: <code>${sl2}</code> 👉 <code>${pl.pipsSl2.toFixed()}P</code>, <code>${
+                      pl.rrTp1.split(':')[0]
+                    }R</code>, <code>$${Math.round(pl.dollarSl2 * 10) / 10}</code> \n`
+              }`;
+
+            return data;
+          }
 
           const kirimtele =
             `#<code>${id}</code>\n\n` +
-            `${date}\n` +
-            `${pair} ${direction} \n\n` +
-            `Entry: <code>${entry}</code> ${isWarning ? '⚠️' : ''}\n` +
-            `SL:      <code>${sl}</code> 👉 <code>${riskPip1} Pips</code>, <code>$${loss1}</code> \n` +
-            `${
-              tp2 ? 'TP1' : 'TP'
-            }:   <code>${tp1}</code> 👉 <code>${tpPip1} Pips</code>, <code>${winR1}R</code>\n` +
-            `${
-              tp2
-                ? `TP2:   <code>${tp2}</code> 👉 <code>${tpPip2} Pips</code>, <code>${winR2}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp3
-                ? `TP3:   <code>${tp3}</code> 👉 <code>${tpPip3} Pips</code>, <code>${winR3}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp4
-                ? `TP2:   <code>${tp4}</code> 👉 <code>${tpPip4} Pips</code>, <code>${winR4}R</code>\n`
-                : ''
-            }` +
-            `${
-              tp5
-                ? `TP2:   <code>${tp5}</code> 👉 <code>${tpPip5}Pips</code>, <code>${winR5}R</code>\n`
-                : ''
-            }` +
+            `${pair} ${direction} \n` +
+            `${date}\n\n` +
+            `${dataEntry(entry)}` +
             `\n---------------------------------`;
-          // `${tp2 ? 'TP1' : 'TP'} : <code>${tp1}</code> [${tpPip1}Pips]$ ${win1}`
 
           ctx.replyItWithHTML(kirimtele);
         } else {

@@ -1,4 +1,5 @@
 const dbId = '1fqw7NyUXoW7tAeTjpaGqjnm7c804tW8iBKBeE2MZuE8';
+const sheetName = 'allDB';
 
 function statusFilled(pesan) {
   Logger.log('status gagal');
@@ -31,7 +32,7 @@ function generateId(name = '') {
   return uniqueID;
 }
 
-function inputData(data, idSheet = dbId) {
+function inputData(data, sheet = sheetName, idSheet = dbId) {
   const db = Dbsheet.init(idSheet);
 
   try {
@@ -42,8 +43,8 @@ function inputData(data, idSheet = dbId) {
       columns.push(key);
     });
 
-    db.createSheetIfNotExists(akun, columns);
-    let userSheet = db.sheet(akun);
+    db.createSheetIfNotExists(sheet, columns);
+    let userSheet = db.sheet(sheet);
 
     let dataInput = {
       _id: generateId(akun),
@@ -62,7 +63,7 @@ function inputData(data, idSheet = dbId) {
   }
 }
 
-function getDataById(id, sheet, idSheet = dbId) {
+function getDataById(id, sheet = sheetName, idSheet = dbId) {
   const db = Dbsheet.init(idSheet);
 
   try {
@@ -79,7 +80,7 @@ function getDataById(id, sheet, idSheet = dbId) {
   }
 }
 
-function deleteDataById(id, sheet, idSheet = dbId) {
+function deleteDataById(id, sheet = sheetName, idSheet = dbId) {
   const db = Dbsheet.init(idSheet);
 
   try {
@@ -95,7 +96,7 @@ function deleteDataById(id, sheet, idSheet = dbId) {
   }
 }
 
-function updateDataById(id, newData, sheet, idSheet = dbId) {
+function updateDataById(id, newData = sheetName, sheet, idSheet = dbId) {
   const db = Dbsheet.init(idSheet);
 
   try {

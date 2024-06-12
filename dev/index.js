@@ -52,11 +52,7 @@ function parseMessage2(message) {
       linkSS.push(el);
     }
 
-    if (
-      dataSplit.includes('/INPUT') ||
-      dataSplit.includes('/EDIT') ||
-      dataSplit.includes('/DEL')
-    ) {
+    if (dataSplit.includes('/INPUT') || dataSplit.includes('/EDIT') || dataSplit.includes('/DEL')) {
       data.cmd = dataSplit;
     }
 
@@ -126,9 +122,7 @@ function parseMessage2(message) {
         }
       } else if (dataSplit.includes('SL')) {
         const slprice = Number(splitAtt[1]);
-        dataSplit.includes('SL2')
-          ? (data.stop_loss_2 = slprice)
-          : (data.stop_loss = slprice);
+        dataSplit.includes('SL2') ? (data.stop_loss_2 = slprice) : (data.stop_loss = slprice);
       } else if (dataSplit.includes('DATE')) {
         tgl = splitAtt[1];
         let date = getDateTime(parseDate(tgl));
@@ -207,11 +201,7 @@ function parseMessage3(message) {
       data.account = dataText.split('#')[1];
     }
 
-    if (
-      dataText.includes('/INPUT') ||
-      dataText.includes('/EDIT') ||
-      dataText.includes('/DEL')
-    ) {
+    if (dataText.includes('/INPUT') || dataText.includes('/EDIT') || dataText.includes('/DEL')) {
       data.cmd = dataText;
     }
 
@@ -278,9 +268,7 @@ function parseMessage3(message) {
           }
         } else if (dataSplit.includes('SL')) {
           const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2')
-            ? (data.stop_loss_2 = slprice)
-            : (data.stop_loss = slprice);
+          dataSplit.includes('SL2') ? (data.stop_loss_2 = slprice) : (data.stop_loss = slprice);
         } else if (dataSplit.includes('DATE')) {
           let tgl = splitAtt[1];
           let date = getDateTime(parseDate(tgl));
@@ -391,11 +379,7 @@ function parseMessage4(message) {
       }
     }
 
-    if (
-      dataText.includes('/INPUT') ||
-      dataText.includes('/EDIT') ||
-      dataText.includes('/DEL')
-    ) {
+    if (dataText.includes('/INPUT') || dataText.includes('/EDIT') || dataText.includes('/DEL')) {
       data.cmd = dataText;
     }
 
@@ -996,13 +980,13 @@ function getRR(risk1, reward, risk2 = null) {
 
   if (risk2) {
     let riskPlus = risk2 / risk1;
-    risk = Math.abs(riskPlus);
+    risk = Math.round(Math.abs(riskPlus) * 10) / 10;
   }
   let r = Math.round(Math.abs(reward / risk1) * 10) / 10;
   return `${risk}:${r}`;
 }
 
-console.log(getRR(25, 63, undefined));
+console.log(getRR(25, 63, 28));
 console.log(getCountPips(2340, 2337.5));
 console.log(getCountProfit(getCountPips(2253.38, 2278.04)));
 
@@ -1010,3 +994,90 @@ const angka = 25.877878745;
 const bulat = Math.round(angka * 100) / 100; // 2angka setelah koma
 
 console.log(bulat);
+
+function getCountDollars(entry, tpOrSl, pair = 'XAUUSD', lotSize) {
+  pair = pair.toLowerCase();
+  let pips = getCountPips(entry, tpOrSl, pair);
+
+  !lotSize ? (lotSize = 0.01) : null;
+
+  const data = dataPair[pair];
+  let res = pips * lotSize * data.price;
+  return Math.round(res * 100) / 100;
+}
+
+function getAlltWinLose({ pair, entry, sl, tp1, tp2, tp3, tp4, tp5, lotSize, sl2 }) {
+  const res = {};
+  const resFormat = {
+    pipsSl: null,
+    pipsSl2: null,
+    pipsTp1: null,
+    pipsTp2: null,
+    pipsTp3: null,
+    pipsTp4: null,
+    pipsTp5: null,
+    dollarSl: null,
+    dollarSl2: null,
+    dollarTp1: null,
+    dollarTp2: null,
+    dollarTp3: null,
+    dollarTp4: null,
+    dollarTp5: null,
+    rrTp1: null,
+    rrTp2: null,
+    rrTp3: null,
+    rrTp4: null,
+    rrTp5: null,
+  };
+
+  // pips
+  sl ? (res.pipsSl = getCountPips(entry, sl, pair)) : null;
+  sl2 ? (res.pipsSl2 = getCountPips(entry, sl2, pair)) : null;
+  tp1 ? (res.pipsTp1 = getCountPips(entry, tp1, pair)) : null;
+  tp2 ? (res.pipsTp2 = getCountPips(entry, tp2, pair)) : null;
+  tp3 ? (res.pipsTp3 = getCountPips(entry, tp3, pair)) : null;
+  tp4 ? (res.pipsTp4 = getCountPips(entry, tp4, pair)) : null;
+  tp5 ? (res.pipsTp5 = getCountPips(entry, tp5, pair)) : null;
+
+  //dollar
+  sl ? (res.dollarSl = getCountDollars(entry, sl, pair, lotSize)) : null;
+  sl2 ? (res.dollarSl2 = getCountDollars(entry, sl2, pair, lotSize)) : null;
+  tp1 ? (res.dollarTp1 = getCountDollars(entry, tp1, pair, lotSize)) : null;
+  tp2 ? (res.dollarTp2 = getCountDollars(entry, tp2, pair, lotSize)) : null;
+  tp3 ? (res.dollarTp3 = getCountDollars(entry, tp3, pair, lotSize)) : null;
+  tp4 ? (res.dollarTp4 = getCountDollars(entry, tp4, pair, lotSize)) : null;
+  tp5 ? (res.dollarTp5 = getCountDollars(entry, tp5, pair, lotSize)) : null;
+
+  // RR
+  res.pipsTp1 ? (res.rrTp1 = getRR(res.pipsSl, res.pipsTp1, res.pipsSl2)) : null;
+  res.pipsTp2 ? (res.rrTp2 = getRR(res.pipsSl, res.pipsTp2, res.pipsSl2)) : null;
+  res.pipsTp3 ? (res.rrTp3 = getRR(res.pipsSl, res.pipsTp3, res.pipsSl2)) : null;
+  res.pipsTp4 ? (res.rrTp4 = getRR(res.pipsSl, res.pipsTp4, res.pipsSl2)) : null;
+  res.pipsTp5 ? (res.rrTp5 = getRR(res.pipsSl, res.pipsTp5, res.pipsSl2)) : null;
+
+  return res;
+}
+
+const tesgettWinLose = getAlltWinLose({
+  entry: 2367,
+  sl: 2377,
+  sl2: 2379,
+  tp1: 2354,
+  tp2: 2334,
+  tp3: 2339,
+  pair: 'XAUUSD',
+});
+
+console.log(tesgettWinLose);
+
+let datakuahj = 257.5454545;
+console.log(Math.round(datakuahj * 10) / 10);
+
+let regID = /^#(.*\d+)/;
+let replyText = `#gf106445455\n
+
+#satuduatiga`;
+let idFound = regID.test(replyText);
+let id = replyText.match(regID)[1];
+console.log(id);
+console.log(idFound);

@@ -94,10 +94,16 @@ bot.on('message', (ctx) => {
       let isEdit = /(EDIT)/i.test(textMessage);
       let idFound = regID.test(replyText);
 
+      // let dataReplay = parseStringToObject(replyText);
       let sheet = 'allDB';
 
+      ctx.replyIt(replyText.match(regID)[1]);
+
       if (idFound && sheet) {
+        // let id = replyText.match(/^_id : (.*)\n/)[1];
         let id = replyText.match(regID)[1];
+
+        // const getData = getDataById(id, account);
 
         if (isDel) {
           const res = deleteDataById(id, sheet);
@@ -119,15 +125,6 @@ bot.on('message', (ctx) => {
               ctx.replyItWithHTML(
                 `#<code>${id}</code>\n database berhasi di update\n---------------------\n${datakirim}`
               );
-
-              const getData = getDataById(id);
-              if (getData.status == 'ok') {
-                const dataFilter = removeNullObj(getData.data[0]);
-                const kirimPesan = formatSendMessage(dataFilter);
-                ctx.replyItWithHTML(kirimPesan);
-              } else {
-                ctx.replyIt(getData);
-              }
             } else {
               ctx.replyIt({ _id: id, ...res });
             }
@@ -147,8 +144,156 @@ bot.on('message', (ctx) => {
         if (input.status == 'ok') {
           const res = input.data;
 
-          const kirimPesan = formatSendMessage(res);
-          ctx.replyItWithHTML(kirimPesan);
+          const datakirim = parseObjToString(input.data);
+          ctx.replyItWithHTML(datakirim);
+
+          let date = res.Date;
+          let direction = res.Direction;
+          let isWarning = res.isWarning;
+          let id = res._id;
+          let pair = res.Pair;
+          let entry = res.Entry;
+          let entry2 = res.Entry_2;
+          let tp1 = res.TP_1;
+          let tp2 = res.TP_2;
+          let tp3 = res.TP_3;
+          let tp4 = res.TP_4;
+          let tp5 = res.TP_5;
+          let sl = res.SL;
+          let sl2 = res.SL_2;
+
+          const pl = getAlltWinLose({
+            entry,
+            sl,
+            sl2,
+            tp1,
+            tp2,
+            tp3,
+            pair,
+          });
+
+          function dataEntry2(e) {
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `SL:      <code>${sl}</code> 👉 <code>${pl.pipsSl}P</code>, <code>$${pl.dollarSl}</code> \n` +
+              `${tp2 ? 'TP1' : 'TP'}:   <code>${tp1}</code> 👉 <code>${pl.pipsTp1}P</code>, <code>${
+                pl.rrTp1
+              }R</code>\n` +
+              `${tp2 ? `TP2:   <code>${tp2}</code> 👉 <code>${pl.pipsTp2}P</code>, <code>${pl.rrTp2}R</code>\n` : ''}` +
+              `${tp3 ? `TP3:   <code>${tp3}</code> 👉 <code>${pl.pipsTp3}P</code>, <code>${pl.rrTp3}R</code>\n` : ''}` +
+              `${tp4 ? `TP4:   <code>${tp4}</code> 👉 <code>${pl.pipsTp4}P</code>, <code>${pl.rrTp4}R</code>\n` : ''}` +
+              `${tp5 ? `TP5:   <code>${tp5}</code> 👉 <code>${pl.pipsTp5}P</code>, <code>${pl.rrTp5}R</code>\n` : ''}` +
+              `\n---------------------------------`;
+
+            return data;
+          }
+
+          function dataEntry3(e) {
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `${tp2 ? 'TP1' : 'TP'}:   <code>${tp1}</code> 👉 <code>${pl.pipsTp1.toFixed()}P</code>, <code>${
+                pl.rrTp1.split(':')[1]
+              }R</code>, <code>$${Math.round(pl.dollarTp1 * 10) / 10}</code>\n` +
+              `${
+                tp2
+                  ? `TP2:   <code>${tp2}</code> 👉 <code>${pl.pipsTp2.toFixed()}P</code>, <code>${
+                      pl.rrTp2.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp2 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp3
+                  ? `TP3:   <code>${tp3}</code> 👉 <code>${pl.pipsTp3.toFixed()}P</code>, <code>${
+                      pl.rrTp3.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp3 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp4
+                  ? `TP4:   <code>${tp4}</code> 👉 <code>${pl.pipsTp4.toFixed()}P</code>, <code>${
+                      pl.rrTp4.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp4 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp5
+                  ? `TP5:   <code>${tp5}</code> 👉 <code>${pl.pipsTp5.toFixed()}P</code>, <code>${
+                      pl.rrTp5.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp5 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `SL:      <code>${sl}</code> 👉 <code>${pl.pipsSl.toFixed()}P</code>, <code>-${
+                pl.rrTp1.split(':')[0]
+              }R</code>, <code>$${Math.round(pl.dollarSl * 10) / 10}</code> \n` +
+              `${
+                !sl2
+                  ? ''
+                  : `SL2:     <code>${sl}</code> 👉 <code>${pl.pipsSl2.toFixed()}P</code>, <code>-${
+                      pl.rrTp1.split(':')[0]
+                    }R</code>, <code>$${Math.round(pl.dollarSl2 * 10) / 10}</code> \n`
+              }`;
+
+            return data;
+          }
+
+          function dataEntry(e) {
+            const slsatu = `SL: <code>${sl}</code> 👉 <code>${pl.pipsSl.toFixed()}P</code>, <code>${
+              pl.rrTp1.split(':')[0]
+            }R</code>, <code>$${Math.round(pl.dollarSl * 10) / 10}</code> \n`;
+
+            const data =
+              `Entry: <code>${e}</code> ${isWarning ? '⚠️' : ''}\n` +
+              `${tp2 ? 'TP1' : 'TP'}: <code>${tp1}</code> 👉 <code>${pl.pipsTp1.toFixed()}P</code>, <code>${
+                pl.rrTp1.split(':')[1]
+              }R</code>, <code>$${Math.round(pl.dollarTp1 * 10) / 10}</code>\n` +
+              `${
+                tp2
+                  ? `TP2: <code>${tp2}</code> 👉 <code>${pl.pipsTp2.toFixed()}P</code>, <code>${
+                      pl.rrTp2.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp2 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp3
+                  ? `TP3: <code>${tp3}</code> 👉 <code>${pl.pipsTp3.toFixed()}P</code>, <code>${
+                      pl.rrTp3.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp3 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp4
+                  ? `TP4: <code>${tp4}</code> 👉 <code>${pl.pipsTp4.toFixed()}P</code>, <code>${
+                      pl.rrTp4.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp4 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                tp5
+                  ? `TP5: <code>${tp5}</code> 👉 <code>${pl.pipsTp5.toFixed()}P</code>, <code>${
+                      pl.rrTp5.split(':')[1]
+                    }R</code>, <code>$${Math.round(pl.dollarTp5 * 10) / 10}</code>\n`
+                  : ''
+              }` +
+              `${
+                !sl2
+                  ? slsatu
+                  : `<s>${slsatu}</s>` +
+                    `SL2: <code>${sl2}</code> 👉 <code>${pl.pipsSl2.toFixed()}P</code>, <code>${
+                      pl.rrTp1.split(':')[0]
+                    }R</code>, <code>$${Math.round(pl.dollarSl2 * 10) / 10}</code> \n`
+              }`;
+
+            return data;
+          }
+
+          const kirimtele =
+            `#<code>${id}</code>\n\n` +
+            `${pair} ${direction} \n` +
+            `${date}\n\n` +
+            `${dataEntry(entry)}` +
+            `\n---------------------------------`;
+
+          ctx.replyItWithHTML(kirimtele);
         } else {
           ctx.replyIt(input);
         }

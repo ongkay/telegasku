@@ -1081,3 +1081,70 @@ let idFound = regID.test(replyText);
 let id = replyText.match(regID)[1];
 console.log(id);
 console.log(idFound);
+
+function removePropertiesObj(object, namePropertyArray) {
+  // Use a for loop to iterate through the properties to remove
+  for (const property of namePropertyArray) {
+    if (object.hasOwnProperty(property)) {
+      delete object[property];
+    }
+  }
+  return object;
+}
+
+// Example usage
+const formatMessage = {
+  cmd: null,
+  Pair: null,
+  Account: null,
+  Status: null,
+  Date: null,
+  Time: null,
+  Direction: null,
+  isWarning: null,
+  Entry: null,
+  Entry_2: null,
+  TP_1: null,
+  TP_2: null,
+  TP_3: null,
+  TP_4: null,
+  TP_5: null,
+  TP_Half: null,
+  SL: null,
+  SL_2: null,
+  News: null,
+  Confirm: null,
+  Note: null,
+  Time_Frame: null,
+  URL_Pic: null,
+  DD_Price: null,
+  Max_Price: null,
+  Ref: null,
+  BETP1: null,
+  Efib_Level: null,
+  Risk: null,
+  Date_close: null,
+};
+
+const propertiesToRemove = ['Pair'];
+
+const formattedMessage = removePropertiesObj(formatMessage, propertiesToRemove);
+
+console.log(formattedMessage); // Contains only the remaining properties
+
+const removeStringNullObj = (obj) => {
+  return Object.keys(obj).reduce((acc, current) => {
+    if (obj[current] !== '' && obj[current] !== null) {
+      return { ...acc, [current]: obj[current] };
+    }
+    return acc;
+  }, {});
+};
+
+const datakusjs = {
+  nama: 'kamu',
+  siapa: null,
+  dimana: null,
+};
+
+console.log(removeStringNullObj(datakusjs));

@@ -1148,3 +1148,157 @@ const datakusjs = {
 };
 
 console.log(removeStringNullObj(datakusjs));
+
+//=================================================================
+function getCountLot(risk, entry, sl, pair, initialBalance) {
+  let slPips1 = getCountPips(entry, sl, pair);
+  let isPersen = risk.includes('%');
+  risk = isPersen ? parseFloat(risk.replace('%', '')) : parseFloat(risk);
+
+  if (isPersen) {
+    let persenToDollar = (initialBalance * risk) / 100;
+    const pipsValue = dataPair[pair].price;
+    let persenToLot = Math.round((persenToDollar / slPips1 / pipsValue) * 100) / 100;
+
+    return persenToLot == 0 ? 0.01 : persenToLot;
+  } else {
+    return risk;
+  }
+}
+
+function counting({
+  pair,
+  direction,
+  entryPrice,
+  sl1,
+  sl2,
+  tp1,
+  tp2,
+  tp3,
+  tp4,
+  tp5,
+  tpp,
+  statusnya,
+  initialBalance = 1000,
+  target = 'TP1',
+  exitPrice,
+  maxPrice,
+  ddPrice,
+  setTarget = 'Original',
+  risk,
+  setRisk = 'Original',
+}) {
+  target ? target.toUpperCase() : '';
+  let isBuy = direction.includes('BUY');
+  // let isSell = direction.includes('SELL');
+  // let isWin = status.includes('TP');
+  // let isLose = status.includes('SL');
+  let isWin;
+
+  // seting TP Price
+  let tpPrice = 0;
+  const gapPrice = isBuy ? entryPrice - sl1 : sl1 - entryPrice;
+  let tragets = setTarget.toUpperCase().includes('ORI') ? target : setTarget; // analysis
+
+  if (tragets.includes('TP1') && tp1) {
+    tpPrice = tp1;
+  } else if (tragets.includes('TP2') && tp2) {
+    tpPrice = tp2;
+  } else if (tragets.includes('TP3') && tp3) {
+    tpPrice = tp3;
+  } else if (tragets.includes('TP4') && tp4) {
+    tpPrice = tp4;
+  } else if (tragets.includes('TP5') && tp5) {
+    tpPrice = tp5;
+  } else if (tragets.includes('R')) {
+    const targetNumber = tragets.split('R')[0];
+    tpPrice = isBuy ? entryPrice + gapPrice * targetNumber : entryPrice - gapPrice * targetNumber;
+  } else if (tragets.includes('MAX') && maxPrice) {
+    tpPrice = maxPrice;
+  } else if (tragets.includes('TPP') && tpp) {
+    tpPrice = tpp;
+  }
+
+  if (maxPrice) {
+    if (isBuy) {
+      maxPrice > entryPrice ? (isWin = true) : (isWin = false);
+    } else {
+      maxPrice < entryPrice ? (isWin = true) : (isWin = false);
+    }
+  }
+
+  // pips
+  let slPips1 = getCountPips(entryPrice, sl1, pair);
+  let slPips2 = sl2 ? getCountPips(entryPrice, sl2, pair) : null;
+  const tpPips = tpPrice ? getCountPips(entryPrice, tpPrice, pair) : 0;
+  const slPips = slPips2 ?? slPips1;
+
+  //risk lot size
+
+  risk = setRisk.toUpperCase().includes('ORI') ? risk : setRisk; // analysis
+  let lotSize = getCountLot(risk, entryPrice, sl1, pair, initialBalance);
+
+  //dollar
+  const tpDollar = getCountProfit(tpPips, lotSize, pair);
+  const slDollar = getCountProfit(slPips, lotSize, pair);
+
+  //ROI
+  const slPersen = Math.round((slDollar / initialBalance) * 10000) / 10000;
+  const tpPersen = Math.round((tpDollar / initialBalance) * 10000) / 10000;
+
+  // RR
+  const rr = getRR(slPips1, tpPips, slPips2);
+  let myRisk = rr.split(':')[0];
+  let myReward = rr.split(':')[1];
+
+  // net
+  const netRR = isWin ? myReward : isLose ? myRisk : 0;
+  const netPips = isWin ? tpPips : isLose ? slPips : 0;
+  const netProfit = isWin ? tpDollar : isLose ? slPips : 0;
+  const ROI = isWin ? tpPersen : isLose ? slPersen : 0;
+
+  const res = {
+    lotSize,
+    tpPrice,
+    slPips,
+    tpPips,
+    slDollar,
+    tpDollar,
+    slPersen,
+    tpPersen,
+    rr,
+    netRR,
+    netPips,
+    netProfit,
+    ROI,
+  };
+
+  return res;
+}
+
+const testcounting = counting({
+  pair: 'xauusd',
+  direction: 'BUY NOW',
+  entryPrice: 2300,
+  sl1: 2298,
+  sl2: '',
+  tp1: 2303,
+  tp2: 2305,
+  tp3: 2310,
+  tp4: '',
+  tp5: '',
+  // statusnya: 'RUNNING',
+  initialBalance: 1000,
+  exitPrice: '',
+  maxPrice: 2309,
+  ddPrice: 2299,
+  target: 'TP1',
+  setTarget: 'Original',
+  // risk: '1%',
+  risk: '10%',
+
+  setRisk: 'Original',
+});
+
+console.log(testcounting);
+console.log(1);

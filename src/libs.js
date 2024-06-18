@@ -123,6 +123,14 @@ function formatSendMessage(data) {
 }
 
 //---------------------------------------------
+function formatUSD(angka) {
+  let dollarUS = Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+  });
+  return dollarUS.format(angka);
+}
+
 //---------------------------------------------
 const removeNullObj = (obj) => {
   return Object.keys(obj).reduce((acc, current) => {

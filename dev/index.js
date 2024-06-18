@@ -975,26 +975,6 @@ function getCountProfit(pips, lotSize = 0.01, pair = 'XAUUSD') {
   return Math.round(res * 100) / 100;
 }
 
-function getRR(risk1, reward, risk2 = null) {
-  let risk = 1;
-
-  if (risk2) {
-    let riskPlus = risk2 / risk1;
-    risk = Math.round(Math.abs(riskPlus) * 10) / 10;
-  }
-  let r = Math.round(Math.abs(reward / risk1) * 10) / 10;
-  return `${risk}:${r}`;
-}
-
-console.log(getRR(25, 63, 28));
-console.log(getCountPips(2340, 2337.5));
-console.log(getCountProfit(getCountPips(2253.38, 2278.04)));
-
-const angka = 25.877878745;
-const bulat = Math.round(angka * 100) / 100; // 2angka setelah koma
-
-console.log(bulat);
-
 function getCountDollars(entry, tpOrSl, pair = 'XAUUSD', lotSize) {
   pair = pair.toLowerCase();
   let pips = getCountPips(entry, tpOrSl, pair);
@@ -1005,82 +985,6 @@ function getCountDollars(entry, tpOrSl, pair = 'XAUUSD', lotSize) {
   let res = pips * lotSize * data.price;
   return Math.round(res * 100) / 100;
 }
-
-function getAlltWinLose({ pair, entry, sl, tp1, tp2, tp3, tp4, tp5, lotSize, sl2 }) {
-  const res = {};
-  const resFormat = {
-    pipsSl: null,
-    pipsSl2: null,
-    pipsTp1: null,
-    pipsTp2: null,
-    pipsTp3: null,
-    pipsTp4: null,
-    pipsTp5: null,
-    dollarSl: null,
-    dollarSl2: null,
-    dollarTp1: null,
-    dollarTp2: null,
-    dollarTp3: null,
-    dollarTp4: null,
-    dollarTp5: null,
-    rrTp1: null,
-    rrTp2: null,
-    rrTp3: null,
-    rrTp4: null,
-    rrTp5: null,
-  };
-
-  // pips
-  sl ? (res.pipsSl = getCountPips(entry, sl, pair)) : null;
-  sl2 ? (res.pipsSl2 = getCountPips(entry, sl2, pair)) : null;
-  tp1 ? (res.pipsTp1 = getCountPips(entry, tp1, pair)) : null;
-  tp2 ? (res.pipsTp2 = getCountPips(entry, tp2, pair)) : null;
-  tp3 ? (res.pipsTp3 = getCountPips(entry, tp3, pair)) : null;
-  tp4 ? (res.pipsTp4 = getCountPips(entry, tp4, pair)) : null;
-  tp5 ? (res.pipsTp5 = getCountPips(entry, tp5, pair)) : null;
-
-  //dollar
-  sl ? (res.dollarSl = getCountDollars(entry, sl, pair, lotSize)) : null;
-  sl2 ? (res.dollarSl2 = getCountDollars(entry, sl2, pair, lotSize)) : null;
-  tp1 ? (res.dollarTp1 = getCountDollars(entry, tp1, pair, lotSize)) : null;
-  tp2 ? (res.dollarTp2 = getCountDollars(entry, tp2, pair, lotSize)) : null;
-  tp3 ? (res.dollarTp3 = getCountDollars(entry, tp3, pair, lotSize)) : null;
-  tp4 ? (res.dollarTp4 = getCountDollars(entry, tp4, pair, lotSize)) : null;
-  tp5 ? (res.dollarTp5 = getCountDollars(entry, tp5, pair, lotSize)) : null;
-
-  // RR
-  res.pipsTp1 ? (res.rrTp1 = getRR(res.pipsSl, res.pipsTp1, res.pipsSl2)) : null;
-  res.pipsTp2 ? (res.rrTp2 = getRR(res.pipsSl, res.pipsTp2, res.pipsSl2)) : null;
-  res.pipsTp3 ? (res.rrTp3 = getRR(res.pipsSl, res.pipsTp3, res.pipsSl2)) : null;
-  res.pipsTp4 ? (res.rrTp4 = getRR(res.pipsSl, res.pipsTp4, res.pipsSl2)) : null;
-  res.pipsTp5 ? (res.rrTp5 = getRR(res.pipsSl, res.pipsTp5, res.pipsSl2)) : null;
-
-  return res;
-}
-
-const tesgettWinLose = getAlltWinLose({
-  entry: 2367,
-  sl: 2377,
-  sl2: 2379,
-  tp1: 2354,
-  tp2: 2334,
-  tp3: 2339,
-  pair: 'XAUUSD',
-});
-
-console.log(tesgettWinLose);
-
-let datakuahj = 257.5454545;
-console.log(Math.round(datakuahj * 10) / 10);
-
-let regID = /^#(.*\d+)/;
-let replyText = `#gf106445455\n
-
-#satuduatiga`;
-let idFound = regID.test(replyText);
-let id = replyText.match(regID)[1];
-console.log(id);
-console.log(idFound);
 
 function removePropertiesObj(object, namePropertyArray) {
   // Use a for loop to iterate through the properties to remove
@@ -1148,7 +1052,19 @@ const datakusjs = {
 };
 
 console.log(removeStringNullObj(datakusjs));
+//=================================================================
 
+function getRR(risk1, reward, risk2 = null, riskExit) {
+  let risk = 1;
+  let riskDua = riskExit ?? risk2;
+
+  if (risk2 || riskExit) {
+    let riskPlus = riskDua / risk1;
+    risk = Math.round(Math.abs(riskPlus) * 10) / 10;
+  }
+  let r = Math.round(Math.abs(reward / risk1) * 10) / 10;
+  return `${risk}:${r}`;
+}
 //=================================================================
 function getCountLot(risk, entry, sl, pair, initialBalance) {
   let slPips1 = getCountPips(entry, sl, pair);
@@ -1165,6 +1081,7 @@ function getCountLot(risk, entry, sl, pair, initialBalance) {
     return risk;
   }
 }
+//=================================================================
 
 function counting({
   pair,
@@ -1178,15 +1095,16 @@ function counting({
   tp4,
   tp5,
   tpp,
-  statusnya,
+  status,
   initialBalance = 1000,
   target = 'TP1',
+  setTarget = 'Original',
+  risk = '1%',
+  setRisk = 'Original',
   exitPrice,
   maxPrice,
   ddPrice,
-  setTarget = 'Original',
-  risk,
-  setRisk = 'Original',
+  setBreakEven,
 }) {
   target ? target.toUpperCase() : '';
   let isBuy = direction.includes('BUY');
@@ -1194,11 +1112,13 @@ function counting({
   // let isWin = status.includes('TP');
   // let isLose = status.includes('SL');
   let isWin;
+  let ket = 'apa ya';
 
   // seting TP Price
   let tpPrice = 0;
+  const isTargetOri = setTarget.toUpperCase().includes('ORI');
   const gapPrice = isBuy ? entryPrice - sl1 : sl1 - entryPrice;
-  let tragets = setTarget.toUpperCase().includes('ORI') ? target : setTarget; // analysis
+  let tragets = isTargetOri ? target : setTarget; // analysis
 
   if (tragets.includes('TP1') && tp1) {
     tpPrice = tp1;
@@ -1217,60 +1137,88 @@ function counting({
     tpPrice = maxPrice;
   } else if (tragets.includes('TPP') && tpp) {
     tpPrice = tpp;
+  } else if (tragets.includes('EXIT') && exitPrice) {
+    tpPrice = exitPrice;
   }
 
   if (maxPrice) {
-    if (isBuy) {
-      maxPrice > entryPrice ? (isWin = true) : (isWin = false);
+    if (isBuy && maxPrice > entryPrice && maxPrice >= tpPrice) {
+      isWin = true;
+    } else if (!isBuy && maxPrice < entryPrice && maxPrice <= tpPrice) {
+      isWin = true;
     } else {
-      maxPrice < entryPrice ? (isWin = true) : (isWin = false);
+      isWin = false;
+    }
+  }
+
+  let slExitPrice = null;
+  if (exitPrice && isTargetOri) {
+    if (isBuy && exitPrice > entryPrice) {
+      isWin = true;
+      tpPrice = exitPrice;
+    } else if (!isBuy && exitPrice < entryPrice) {
+      isWin = true;
+      tpPrice = exitPrice;
+    } else {
+      isWin = false;
+      slExitPrice = exitPrice;
     }
   }
 
   // pips
   let slPips1 = getCountPips(entryPrice, sl1, pair);
   let slPips2 = sl2 ? getCountPips(entryPrice, sl2, pair) : null;
+  let slExitPips = slExitPrice ? getCountPips(entryPrice, slExitPrice, pair) : null;
+  const slPips = slExitPips ?? slPips2 ?? slPips1;
   const tpPips = tpPrice ? getCountPips(entryPrice, tpPrice, pair) : 0;
-  const slPips = slPips2 ?? slPips1;
+  const tpPipsMax = tpPrice ? getCountPips(entryPrice, maxPrice, pair) : 0;
+  const ddPips = tpPrice ? getCountPips(entryPrice, ddPrice, pair) : 0;
 
   //risk lot size
-
   risk = setRisk.toUpperCase().includes('ORI') ? risk : setRisk; // analysis
   let lotSize = getCountLot(risk, entryPrice, sl1, pair, initialBalance);
 
   //dollar
   const tpDollar = getCountProfit(tpPips, lotSize, pair);
   const slDollar = getCountProfit(slPips, lotSize, pair);
+  const ddDollar = getCountProfit(ddPips, lotSize, pair);
 
   //ROI
   const slPersen = Math.round((slDollar / initialBalance) * 10000) / 10000;
   const tpPersen = Math.round((tpDollar / initialBalance) * 10000) / 10000;
+  const ddPersen = Math.round((ddDollar / initialBalance) * 10000) / 10000;
 
   // RR
-  const rr = getRR(slPips1, tpPips, slPips2);
-  let myRisk = rr.split(':')[0];
-  let myReward = rr.split(':')[1];
+  const rr = getRR(slPips1, tpPips, slPips2, slExitPips);
+  let myRisk = parseFloat(rr.split(':')[0]);
+  let myReward = parseFloat(rr.split(':')[1]);
 
   // net
-  const netRR = isWin ? myReward : isLose ? myRisk : 0;
-  const netPips = isWin ? tpPips : isLose ? slPips : 0;
-  const netProfit = isWin ? tpDollar : isLose ? slPips : 0;
-  const ROI = isWin ? tpPersen : isLose ? slPersen : 0;
+  const netRR = isWin ? myReward : isWin == false ? myRisk * -1 : 0;
+  const netPips = isWin ? tpPips : isWin == false ? slPips * -1 : 0;
+  const netProfit = isWin ? tpDollar : isWin == false ? slPips * -1 : 0;
+  const ROI = isWin ? tpPersen : isWin == false ? slPersen * -1 : 0;
 
   const res = {
+    isWin,
     lotSize,
     tpPrice,
     slPips,
-    tpPips,
     slDollar,
-    tpDollar,
     slPersen,
+    tpPips,
+    tpDollar,
     tpPersen,
     rr,
     netRR,
     netPips,
     netProfit,
     ROI,
+    ket,
+    tpPipsMax,
+    ddPips,
+    ddDollar,
+    ddPersen,
   };
 
   return res;
@@ -1287,17 +1235,17 @@ const testcounting = counting({
   tp3: 2310,
   tp4: '',
   tp5: '',
-  // statusnya: 'RUNNING',
+  status: 'RUNNING', // TP HIT, TP CLOSE, SL HIT, SL CLOSE, PENDING, RUNNING, BE, MISSED, NOT ACTIVE
   initialBalance: 1000,
-  exitPrice: '',
   maxPrice: 2309,
   ddPrice: 2299,
-  target: 'TP1',
-  setTarget: 'Original',
+  // exitPrice: 2299,
+  target: 'TP3', // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
+  setTarget: 'ori',
   // risk: '1%',
-  risk: '10%',
-
+  risk: '10%', // 1%, 2%, 0,01
   setRisk: 'Original',
+  setBreakEven: '1R',
 });
 
 console.log(testcounting);

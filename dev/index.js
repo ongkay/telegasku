@@ -1107,12 +1107,10 @@ function counting({
   setBreakEven,
 }) {
   target ? target.toUpperCase() : '';
+  status ? status.toUpperCase() : '';
   let isBuy = direction.includes('BUY');
-  // let isSell = direction.includes('SELL');
-  // let isWin = status.includes('TP');
-  // let isLose = status.includes('SL');
   let isWin;
-  let ket = 'apa ya';
+  let ket;
 
   // seting TP Price
   let tpPrice = 0;
@@ -1174,6 +1172,17 @@ function counting({
     }
   }
 
+  if (isTargetOri) {
+    if (status.includes('TP') && !maxPrice) {
+      isWin = true;
+    } else if (status.includes('SL') && !maxPrice) {
+      isWin = false;
+    } else if (status.includes('BREAKEVEN') && !priceBE) {
+      isWin = false;
+      isBreakEven = true;
+    }
+  }
+
   let slExitPrice = null;
   if (exitPrice && isTargetOri) {
     if (isBuy && exitPrice > entryPrice) {
@@ -1194,8 +1203,10 @@ function counting({
   let slExitPips = slExitPrice ? getCountPips(entryPrice, slExitPrice, pair) : null;
   const slPips = slExitPips ?? slPips2 ?? slPips1;
   const tpPips = tpPrice ? getCountPips(entryPrice, tpPrice, pair) : 0;
-  const tpPipsMax = tpPrice ? getCountPips(entryPrice, maxPrice, pair) : 0;
-  const ddPips = tpPrice ? getCountPips(entryPrice, ddPrice, pair) : 0;
+  const tpPipsMax = maxPrice ? getCountPips(entryPrice, maxPrice, pair) : 0;
+
+  const ddPips = ddPrice ? getCountPips(entryPrice, ddPrice, pair) : 0;
+  const ddToSl = ddPrice ? Math.round((ddPips / slPips) * 100) / 100 : 0;
 
   //risk lot size
   risk = setRisk.toUpperCase().includes('ORI') ? risk : setRisk; // analysis
@@ -1222,6 +1233,17 @@ function counting({
   const netProfit = isBreakEven ? 0 : isWin ? tpDollar : isWin == false ? slPips * -1 : 0;
   const ROI = isBreakEven ? 0 : isWin ? tpPersen : isWin == false ? slPersen * -1 : 0;
 
+  //ket
+  ket = !tpPrice
+    ? 'Not Found'
+    : isBreakEven
+    ? 'BE'
+    : isWin
+    ? `WIN ${myReward}R`
+    : isWin == false
+    ? `LOSS ${myRisk}R`
+    : status;
+
   const res = {
     isWin,
     isBreakEven,
@@ -1234,15 +1256,16 @@ function counting({
     tpDollar,
     tpPersen,
     rr,
-    netRR,
-    netPips,
-    netProfit,
-    ROI,
-    ket,
     tpPipsMax,
     ddPips,
     ddDollar,
     ddPersen,
+    ddToSl,
+    ket,
+    netRR,
+    netPips,
+    netProfit,
+    ROI,
   };
 
   return res;
@@ -1259,13 +1282,13 @@ const testcounting = counting({
   tp3: 2310,
   tp4: '',
   tp5: '',
-  status: 'RUNNING', // TP HIT, TP CLOSE, SL HIT, SL CLOSE, PENDING, RUNNING, BE, MISSED, NOT ACTIVE
+  status: 'RUNNING', // TP HIT, TP CLOSE, SL HIT, SL CLOSE, PENDING, RUNNING, BE, MISSED, NOT ACTIVE, BREAKEVEN
   initialBalance: 1000,
   maxPrice: 2309,
   ddPrice: 2299,
   // exitPrice: 2299,
-  target: 'TP3', // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
-  setTarget: 'TP3',
+  target: 'TP1', // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
+  setTarget: 'TP4',
   // risk: '1%',
   risk: '10%', // 1%, 2%, 0,01
   setRisk: 'Original',
@@ -1276,8 +1299,5 @@ console.log(testcounting);
 console.log(1);
 
 /**TUgas
- * - dd to SL
- * - profit max
- * - keterangan
- * - wl by status
+ * - refactoring
  */

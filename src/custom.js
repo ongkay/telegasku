@@ -97,11 +97,124 @@ function countNet(status, risk, reward) {
 /**
  * menghitung net pips, net dollar, net RR
  *
- * @return nilai pips/dollar/rr
+ * @param {number} entryPrice
+ * @param {number} sl1
+ * @param {number} sl2
+ * @param {number} tp1
+ * @param {number} tp2
+ * @param {number} tp3
+ * @param {number} tp4
+ * @param {number} tp5
+ * @param {number} initialBalance // saldo awal
+ * @param {number} exitPrice // cut profit / cut loss
+ * @param {number} maxPrice
+ * @param {number} ddPrice
+ * @param {string} pair
+ * @param {string} direction // sell / buy
+ * @param {string} status  // TP HIT, TP CLOSE, SL HIT, SL CLOSE, PENDING, RUNNING, BE, MISSED, NOT ACTIVE, BREAKEVEN
+ * @param {string} target // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
+ * @param {string} setTarget // hanya untuk analisis
+ * @param {string} risk // 1%, 2%, 0,01
+ * @param {string} setRisk
+ * @param {string} setBreakEven // hanya aktive ketika seTarget analisis aja
+
+ * @return all
  * @customfunction
  */
-function testing({ a, b, c, d }) {
-  const res = [[a, b, c, d]];
+function countAll(
+  pair,
+  direction,
+  entryPrice,
+  sl1,
+  sl2,
+  tp1,
+  tp2,
+  tp3,
+  tp4,
+  tp5,
+  tpp,
+  status,
+  initialBalance = 1000,
+  target = 'TP1',
+  setTarget = 'Original',
+  risk = '1%',
+  setRisk = 'Original',
+  exitPrice,
+  maxPrice,
+  ddPrice,
+  setBreakEven
+) {
+  const {
+    isWin,
+    isBreakEven,
+    ket,
+    lotSize,
+    tpPrice,
+    slPips,
+    slDollar,
+    slPersen,
+    tpPips,
+    tpDollar,
+    tpPersen,
+    rr,
+    netRR,
+    netPips,
+    netProfit,
+    ROI,
+    ddPips,
+    ddDollar,
+    ddPersen,
+    ddToSl,
+    tpPipsMax,
+  } = getCountAll({
+    pair,
+    direction,
+    entryPrice,
+    sl1,
+    sl2,
+    tp1,
+    tp2,
+    tp3,
+    tp4,
+    tp5,
+    tpp,
+    status,
+    initialBalance,
+    target,
+    setTarget,
+    risk,
+    setRisk,
+    exitPrice,
+    maxPrice,
+    ddPrice,
+    setBreakEven,
+  });
+
+  const res = [
+    [
+      isWin,
+      isBreakEven,
+      ket,
+      lotSize,
+      tpPrice,
+      slPips,
+      slDollar,
+      slPersen,
+      tpPips,
+      tpDollar,
+      tpPersen,
+      rr,
+      netRR,
+      netPips,
+      netProfit,
+      ROI,
+      ddPips,
+      ddDollar,
+      ddPersen,
+      ddToSl,
+      tpPipsMax,
+    ],
+  ];
 
   return res;
 }

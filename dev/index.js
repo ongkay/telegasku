@@ -1067,6 +1067,8 @@ function getRR(risk1, reward, risk2 = null, riskExit) {
 }
 //=================================================================
 function getCountLot(risk, entry, sl, pair, initialBalance) {
+  risk = risk.toString();
+
   let slPips1 = getCountPips(entry, sl, pair);
   let isPersen = risk.includes('%');
   risk = isPersen ? parseFloat(risk.replace('%', '')) : parseFloat(risk);
@@ -1202,6 +1204,7 @@ function counting({
   let slPips2 = sl2 ? getCountPips(entryPrice, sl2, pair) : null;
   let slExitPips = slExitPrice ? getCountPips(entryPrice, slExitPrice, pair) : null;
   const slPips = slExitPips ?? slPips2 ?? slPips1;
+
   const tpPips = tpPrice ? getCountPips(entryPrice, tpPrice, pair) : 0;
   const tpPipsMax = maxPrice ? getCountPips(entryPrice, maxPrice, pair) : 0;
 
@@ -1211,6 +1214,8 @@ function counting({
   //risk lot size
   risk = setRisk.toUpperCase().includes('ORI') ? risk : setRisk; // analysis
   let lotSize = getCountLot(risk, entryPrice, sl1, pair, initialBalance);
+
+  console.log(risk);
 
   //dollar
   const tpDollar = getCountProfit(tpPips, lotSize, pair);
@@ -1247,6 +1252,7 @@ function counting({
   const res = {
     isWin,
     isBreakEven,
+    ket,
     lotSize,
     tpPrice,
     slPips,
@@ -1256,16 +1262,15 @@ function counting({
     tpDollar,
     tpPersen,
     rr,
-    tpPipsMax,
-    ddPips,
-    ddDollar,
-    ddPersen,
-    ddToSl,
-    ket,
     netRR,
     netPips,
     netProfit,
     ROI,
+    ddPips,
+    ddDollar,
+    ddPersen,
+    ddToSl,
+    tpPipsMax,
   };
 
   return res;
@@ -1288,9 +1293,9 @@ const testcounting = counting({
   ddPrice: 2299,
   // exitPrice: 2299,
   target: 'TP1', // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
-  setTarget: 'TP4',
-  // risk: '1%',
-  risk: '10%', // 1%, 2%, 0,01
+  setTarget: 'TP1',
+  risk: 0.01,
+  // risk: '10%', // 1%, 2%, 0,01
   setRisk: 'Original',
   setBreakEven: '1R', // hanya aktive ketika seTarget analisis aja
 });
@@ -1301,3 +1306,11 @@ console.log(1);
 /**TUgas
  * - refactoring
  */
+
+const ajaa = {
+  nama: 'saya',
+  alamat: 'linggau',
+};
+
+const { nama, alamat } = ajaa;
+console.log(nama);

@@ -1141,11 +1141,34 @@ function counting({
     tpPrice = exitPrice;
   }
 
-  if (maxPrice) {
+  let priceBE = null;
+  setBreakEven = setBreakEven.toUpperCase();
+  if (setBreakEven && !isTargetOri) {
+    if (setBreakEven.includes('TP1')) {
+      priceBE = tp1;
+    } else if (setBreakEven.includes('TP2')) {
+      priceBE = tp2;
+    } else if (setBreakEven.includes('TP3')) {
+      priceBE = tp3;
+    } else if (setBreakEven.includes('R')) {
+      const setR = setBreakEven.split('R')[0];
+      priceBE = isBuy ? entryPrice + gapPrice * setR : entryPrice - gapPrice * setR;
+      console.log(setR);
+    }
+  }
+
+  let isBreakEven = false;
+  if (tpPrice && maxPrice) {
     if (isBuy && maxPrice > entryPrice && maxPrice >= tpPrice) {
       isWin = true;
     } else if (!isBuy && maxPrice < entryPrice && maxPrice <= tpPrice) {
       isWin = true;
+    } else if (isBuy && priceBE && maxPrice >= priceBE) {
+      isWin = false;
+      isBreakEven = true;
+    } else if (!isBuy && priceBE && maxPrice <= priceBE) {
+      isWin = false;
+      isBreakEven = true;
     } else {
       isWin = false;
     }
@@ -1194,13 +1217,14 @@ function counting({
   let myReward = parseFloat(rr.split(':')[1]);
 
   // net
-  const netRR = isWin ? myReward : isWin == false ? myRisk * -1 : 0;
-  const netPips = isWin ? tpPips : isWin == false ? slPips * -1 : 0;
-  const netProfit = isWin ? tpDollar : isWin == false ? slPips * -1 : 0;
-  const ROI = isWin ? tpPersen : isWin == false ? slPersen * -1 : 0;
+  const netRR = isBreakEven ? 0 : isWin ? myReward : isWin == false ? myRisk * -1 : 0;
+  const netPips = isBreakEven ? 0 : isWin ? tpPips : isWin == false ? slPips * -1 : 0;
+  const netProfit = isBreakEven ? 0 : isWin ? tpDollar : isWin == false ? slPips * -1 : 0;
+  const ROI = isBreakEven ? 0 : isWin ? tpPersen : isWin == false ? slPersen * -1 : 0;
 
   const res = {
     isWin,
+    isBreakEven,
     lotSize,
     tpPrice,
     slPips,
@@ -1241,12 +1265,19 @@ const testcounting = counting({
   ddPrice: 2299,
   // exitPrice: 2299,
   target: 'TP3', // TP1, TP2, TP3, TP4, TP5, TP MAX, TPP, R
-  setTarget: 'ori',
+  setTarget: 'TP3',
   // risk: '1%',
   risk: '10%', // 1%, 2%, 0,01
   setRisk: 'Original',
-  setBreakEven: '1R',
+  setBreakEven: '1R', // hanya aktive ketika seTarget analisis aja
 });
 
 console.log(testcounting);
 console.log(1);
+
+/**TUgas
+ * - dd to SL
+ * - profit max
+ * - keterangan
+ * - wl by status
+ */

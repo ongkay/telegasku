@@ -95,8 +95,7 @@ function countNet(status, risk, reward) {
 }
 
 /**
- * menghitung net pips, net dollar, net RR
- *
+ * menghitung tpPrice, ket, lotSize, slPips, slDollar, slPersen, tpPips, tpDollar, tpPersen, rr, netRR, netPips, netProfit, ROI, ddPips, ddDollar, ddPersen, ddToSl,
  * @param {number} entryPrice
  * @param {number} sl1
  * @param {number} sl2
@@ -123,7 +122,10 @@ function countNet(status, risk, reward) {
  */
 function countAll(
   pair,
+  status,
   direction,
+  target,
+  risk,
   entryPrice,
   sl1,
   sl2,
@@ -133,15 +135,12 @@ function countAll(
   tp4,
   tp5,
   tpp,
-  status,
-  initialBalance = 1000,
-  target = 'TP1',
-  setTarget = 'Original',
-  risk = '1%',
-  setRisk = 'Original',
   exitPrice,
   maxPrice,
   ddPrice,
+  initialBalance,
+  setRisk,
+  setTarget,
   setBreakEven
 ) {
   const {
@@ -169,6 +168,9 @@ function countAll(
   } = getCountAll({
     pair,
     direction,
+    status,
+    target,
+    risk,
     entryPrice,
     sl1,
     sl2,
@@ -178,25 +180,20 @@ function countAll(
     tp4,
     tp5,
     tpp,
-    status,
-    initialBalance,
-    target,
-    setTarget,
-    risk,
-    setRisk,
     exitPrice,
     maxPrice,
     ddPrice,
+    initialBalance,
+    setRisk,
+    setTarget,
     setBreakEven,
   });
 
   const res = [
     [
-      isWin,
-      isBreakEven,
+      tpPrice,
       ket,
       lotSize,
-      tpPrice,
       slPips,
       slDollar,
       slPersen,
@@ -212,7 +209,6 @@ function countAll(
       ddDollar,
       ddPersen,
       ddToSl,
-      tpPipsMax,
     ],
   ];
 

@@ -131,6 +131,8 @@ function getAlltWinLose({ pair, entry, sl, tp1, tp2, tp3, tp4, tp5, lotSize, sl2
 }
 
 function getCountLot(risk, entry, sl, pair, initialBalance) {
+  risk = risk.toString();
+
   let slPips1 = getCountPips(entry, sl, pair);
   let isPersen = risk.includes('%');
   risk = isPersen ? parseFloat(risk.replace('%', '')) : parseFloat(risk);

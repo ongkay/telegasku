@@ -1143,7 +1143,7 @@ function counting({
 
   let priceBE = null;
   setBreakEven = setBreakEven.toUpperCase();
-  if (setBreakEven && !isTargetOri) {
+  if (setBreakEven !== 'NO' && !isTargetOri) {
     if (setBreakEven.includes('TP1')) {
       priceBE = tp1;
     } else if (setBreakEven.includes('TP2')) {

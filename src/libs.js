@@ -199,12 +199,12 @@ function parseDate(date = null, time = null) {
     d.setMinutes(allTime[1]);
   }
 
-  return d;
+  return d; // '2024-03-22T09:56:52.000Z'
 }
 
 //============================================
 //
-function getDateTime(date) {
+function getDateTime(date, forSheet = false) {
   const d = new Date(date);
   // const d = d;
   let yyyy = d.getFullYear();
@@ -216,9 +216,13 @@ function getDateTime(date) {
 
   if (dd < 10) dd = '0' + dd;
   if (mm < 10) mm = '0' + mm;
+  if (HH < 10) HH = '0' + HH;
+  if (m < 10) m = '0' + m;
 
   const formatted = dd + '/' + mm + '/' + yyyy + ' ' + HH + ':' + m;
-  return formatted;
+  const formatSheet = mm + '/' + dd + '/' + yyyy + ' ' + HH + ':' + m + ':' + '00';
+
+  return forSheet ? formatSheet : formatted;
 }
 
 //======================================

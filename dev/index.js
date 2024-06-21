@@ -1,508 +1,3 @@
-function parseMessage2(message) {
-  let messageText = message?.text ?? message;
-  let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
-
-  const data = {
-    cmd: null,
-    account: null,
-    status: null,
-    date: null,
-    time: null,
-    direction: null,
-    isWarning: null,
-    entry: null,
-    entry2nd: null,
-    take_profit_1: null,
-    take_profit_2: null,
-    take_profit_3: null,
-    take_profit_4: null,
-    take_profit_5: null,
-    TP_Partial: null,
-    stop_loss: null,
-    stop_loss_2: null,
-    news: null,
-    confirm: null,
-    note: null,
-    timeFrame: null,
-    urlPic: null,
-  };
-
-  const regAngka = /\d+\.?\d*/;
-  const regSymbol = /[_@:-\s]+/;
-  const regexUrl =
-    /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|www\.){1}([0-9A-Za-z-\.@:%_\+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/g;
-
-  let jam = null;
-  let tgl = null;
-  let linkSS = [];
-  let allTp = [];
-  let dataMessageText;
-
-  if (messageText.includes('\n')) {
-    dataMessageText = messageText.split('\n');
-  } else {
-    dataMessageText = [dataMessageText];
-  }
-
-  dataMessageText.forEach((el) => {
-    const dataSplit = el.toUpperCase().replace(regSymbol, '@');
-    // console.log(splitAtt);
-
-    if (el.match(regexUrl)) {
-      linkSS.push(el);
-    }
-
-    if (dataSplit.includes('/INPUT') || dataSplit.includes('/EDIT') || dataSplit.includes('/DEL')) {
-      data.cmd = dataSplit;
-    }
-
-    if (dataSplit.includes('#')) {
-      console.log(dataSplit);
-
-      data.account = dataSplit.split('#')[1];
-    }
-
-    if (dataSplit.includes('WARN')) {
-      data.isWarning = true;
-    }
-
-    if (dataSplit.includes('ENTRY')) {
-      let dataEntry = dataSplit.match(regAngka)[0];
-      data.entry = Number(dataEntry);
-    }
-
-    //entry2nd
-    if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
-      const otherLimit = dataSplit.match(regAngka)[0];
-      data.entry2nd = Number(otherLimit);
-    }
-
-    // direction
-    if (dataSplit.includes('SELL')) {
-      data.direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
-      let dataEntry = dataSplit.match(regAngka)[0];
-      data.entry = Number(dataEntry);
-    } else if (dataSplit.includes('BUY')) {
-      data.direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
-    }
-
-    if (dataSplit.includes('@')) {
-      const splitAtt = dataSplit.split('@');
-
-      if (dataSplit.includes('NOTE')) {
-        data.note = splitAtt[1].toLowerCase();
-      }
-
-      if (dataSplit.includes('CONFIRM')) {
-        data.confirm = splitAtt[1].toLowerCase();
-      }
-
-      if (dataSplit.includes('TF')) {
-        data.timeFrame = splitAtt[1].toLowerCase();
-      }
-
-      if (dataSplit.includes('NEWS')) {
-        data.news = Number(splitAtt[1]);
-      }
-      if (dataSplit.includes('STATUS')) {
-        data.status = splitAtt[1];
-      }
-
-      // TP, TPP, SL, Date
-      if (dataSplit.includes('TP')) {
-        if (dataSplit.includes('TPP')) {
-          data.TP_Partial = Number(splitAtt[1]);
-        } else {
-          splitAtt.forEach((r) => {
-            if (r.includes('TP')) {
-            } else if (r.match(regAngka)) {
-              allTp.push(r);
-            }
-          });
-        }
-      } else if (dataSplit.includes('SL')) {
-        const slprice = Number(splitAtt[1]);
-        dataSplit.includes('SL2') ? (data.stop_loss_2 = slprice) : (data.stop_loss = slprice);
-      } else if (dataSplit.includes('DATE')) {
-        tgl = splitAtt[1];
-        let date = getDateTime(parseDate(tgl));
-        data.date = date.split(' ')[0];
-        data.time = date.split(' ')[1];
-      } else if (dataSplit.includes('TIME')) {
-        data.time = splitAtt[1];
-      }
-    }
-  });
-
-  // add TP pride to data
-  allTp.map((item, i) => {
-    let price = Number(item);
-    data[`take_profit_${i + 1}`] = price;
-  });
-
-  data.urlPic = linkSS;
-  if (!data.account) data.account = messageForumName;
-
-  return data;
-}
-
-function parseMessage3(message) {
-  let messageText = message?.text ?? message;
-  let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
-
-  const data = {
-    cmd: null,
-    account: null,
-    status: null,
-    date: null,
-    time: null,
-    direction: null,
-    isWarning: null,
-    entry: null,
-    entry2nd: null,
-    take_profit_1: null,
-    take_profit_2: null,
-    take_profit_3: null,
-    take_profit_4: null,
-    take_profit_5: null,
-    TP_Partial: null,
-    stop_loss: null,
-    stop_loss_2: null,
-    news: null,
-    confirm: null,
-    note: null,
-    timeFrame: null,
-    urlPic: null,
-  };
-
-  const regAngka = /\d+\.?\d*/;
-  const regSymbol = /[_@:-\s]+/;
-  const regexUrl =
-    /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|www\.){1}([0-9A-Za-z-\.@:%_\+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/g;
-
-  let linkSS = [];
-  let allTp = [];
-  let dataMessageText;
-
-  if (messageText.includes('\n')) {
-    dataMessageText = messageText.split('\n');
-  } else {
-    dataMessageText = [dataMessageText];
-  }
-
-  dataMessageText.forEach((el) => {
-    const dataText = el.toUpperCase();
-
-    if (el.match(regexUrl)) {
-      linkSS.push(el);
-    }
-
-    if (dataText.includes('#')) {
-      data.account = dataText.split('#')[1];
-    }
-
-    if (dataText.includes('/INPUT') || dataText.includes('/EDIT') || dataText.includes('/DEL')) {
-      data.cmd = dataText;
-    }
-
-    if (dataText.includes('WARN')) {
-      data.isWarning = true;
-    }
-
-    if (el.match(regSymbol)) {
-      const dataSplit = el.toUpperCase().replace(regSymbol, '@');
-
-      if (dataSplit.includes('ENTRY')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.entry = Number(dataEntry);
-      }
-
-      //entry2nd
-      if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
-        const otherLimit = dataSplit.match(regAngka)[0];
-        data.entry2nd = Number(otherLimit);
-      }
-
-      // direction
-      if (dataSplit.includes('SELL')) {
-        data.direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.entry = Number(dataEntry);
-      } else if (dataSplit.includes('BUY')) {
-        data.direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
-      }
-
-      if (dataSplit.includes('@')) {
-        const splitAtt = dataSplit.split('@');
-
-        if (dataSplit.includes('NOTE')) {
-          data.note = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('CONFIRM')) {
-          data.confirm = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('TF')) {
-          data.timeFrame = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('NEWS')) {
-          data.news = Number(splitAtt[1]);
-        }
-        if (dataSplit.includes('STATUS')) {
-          data.status = splitAtt[1];
-        }
-
-        // TP, TPP, SL, Date
-        if (dataSplit.includes('TP')) {
-          if (dataSplit.includes('TPP')) {
-            data.TP_Partial = Number(splitAtt[1]);
-          } else {
-            splitAtt.forEach((r) => {
-              if (r.includes('TP')) {
-              } else if (r.match(regAngka)) {
-                allTp.push(r);
-              }
-            });
-          }
-        } else if (dataSplit.includes('SL')) {
-          const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2') ? (data.stop_loss_2 = slprice) : (data.stop_loss = slprice);
-        } else if (dataSplit.includes('DATE')) {
-          let tgl = splitAtt[1];
-          let date = getDateTime(parseDate(tgl));
-          data.date = date.split(' ')[0];
-          data.time = date.split(' ')[1];
-        } else if (dataSplit.includes('TIME')) {
-          data.time = splitAtt[1];
-        }
-      }
-    }
-  });
-
-  // add TP pride to data
-
-  if (allTp.length > 0) {
-    allTp.map((item, i) => {
-      let price = Number(item);
-      data[`take_profit_${i + 1}`] = price;
-    });
-  }
-
-  if (linkSS.length > 0) data.urlPic = linkSS;
-  if (!data.account) data.account = messageForumName;
-
-  return data;
-}
-function parseMessage4(message) {
-  const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
-
-  let messageText = message?.text ?? message;
-  let messageForumName = message?.reply_to_message?.forum_topic_created?.name;
-
-  console.log(messageText);
-  const data = {
-    cmd: null,
-    Account: null,
-    Status: null,
-    Date: null,
-    Time: null,
-    Direction: null,
-    isWarning: false,
-    Entry: null,
-    Entry_2: null,
-    TP_1: null,
-    TP_2: null,
-    TP_3: null,
-    TP_4: null,
-    TP_5: null,
-    TP_Half: null,
-    SL: null,
-    SL_2: null,
-    News: null,
-    Confirm: null,
-    Note: null,
-    Time_Frame: null,
-    URL_Pic: null,
-    Pair: null,
-    DD_Price: null,
-    Max_Price: null,
-    Ref: null,
-    BETP1: null,
-    Efib_Level: null,
-    Risk: null,
-    Date_close: null,
-  };
-
-  const regAngka = /\d+\.?\d*/;
-  const regSymbol = /[_@:-\s]+/;
-  const regexUrl =
-    /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|www\.){1}([0-9A-Za-z-\.@:%_\+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/g;
-
-  let linkSS = [];
-  let allTp = [];
-  let dataMessageText;
-
-  if (messageText.includes('\n')) {
-    dataMessageText = messageText.split('\n');
-    console.log(dataMessageText);
-  } else {
-    dataMessageText = [messageText];
-  }
-  console.log(dataMessageText[0].split('@')[1].trim());
-
-  dataMessageText.forEach((el) => {
-    console.log(el);
-  });
-
-  dataMessageText.forEach((el) => {
-    // dataMessageText.forEach((el) => {
-    const dataText = el.toUpperCase();
-
-    console.log(dataText);
-
-    if (el.match(regexUrl)) {
-      linkSS.push(el);
-    }
-
-    if (dataText.includes('#')) {
-      data.Account = dataText.split('#')[1];
-    }
-    if (!data.Pair) {
-      if (dataText == 'XAUUSD' || dataText == 'GOLD') {
-        data.Pair = 'XAUUSD';
-      } else {
-        dataPair.map((item) => {
-          dataText.includes(item) ? (data.Pair = item) : '';
-        });
-      }
-    }
-
-    if (dataText.includes('/INPUT') || dataText.includes('/EDIT') || dataText.includes('/DEL')) {
-      data.cmd = dataText;
-    }
-
-    if (dataText.includes('WARN')) {
-      data.isWarning = true;
-    }
-
-    if (el.match(regSymbol)) {
-      const dataSplit = el.toUpperCase().replace(regSymbol, '@');
-
-      if (dataSplit.includes('MAX')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Max_Price = Number(dataEntry);
-      }
-
-      if (dataSplit.includes('DD')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.DD_Price = Number(dataEntry);
-      }
-
-      if (dataSplit.includes('ENTRY')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Entry = Number(dataEntry);
-      }
-
-      //Entry_2
-      if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
-        const otherLimit = dataSplit.match(regAngka)[0];
-        data.Entry_2 = Number(otherLimit);
-      }
-
-      // Direction
-      if (dataSplit.includes('SELL')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'SELL LIMIT' : 'SELL NOW';
-        // let dataEntry = dataSplit.match(regAngka)[0];
-        // data.Entry = Number(dataEntry);
-      } else if (dataSplit.includes('BUY')) {
-        data.Direction = dataSplit.includes('LIMIT') ? 'BUY LIMIT' : 'BUY NOW';
-      }
-
-      if (dataSplit.includes('@')) {
-        const splitAtt = dataSplit.split('@');
-
-        if (dataSplit.includes('BETP1')) {
-          data.BETP1 = splitAtt[1];
-        }
-
-        if (dataSplit.includes('EFIB')) {
-          data.Efib_Level = splitAtt[1];
-        }
-
-        if (dataSplit.includes('REF')) {
-          data.Ref = splitAtt[1];
-        }
-
-        if (dataSplit.includes('RISK')) {
-          data.Risk = splitAtt[1];
-        }
-
-        if (dataSplit.includes('NOTE')) {
-          data.Note = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('CONFIRM')) {
-          data.Confirm = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('TF')) {
-          data.Time_Frame = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('NEWS')) {
-          data.News = Number(splitAtt[1]);
-        }
-        if (dataSplit.includes('STATUS')) {
-          data.Status = splitAtt[1];
-        }
-
-        // TP, TPP, SL, Date
-        if (dataSplit.includes('TP')) {
-          if (dataSplit.includes('TPP')) {
-            data.TP_Half = Number(splitAtt[1]);
-          } else {
-            splitAtt.forEach((r) => {
-              if (r.includes('TP')) {
-              } else if (r.match(regAngka)) {
-                allTp.push(r);
-              }
-            });
-          }
-        } else if (dataSplit.includes('SL')) {
-          const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
-        } else if (dataSplit.includes('DATE_CLOSE')) {
-          let tgl = splitAtt[1];
-          data.Date_close = getDateTime(parseDate(tgl));
-        } else if (dataSplit.includes('DATE')) {
-          let tgl = splitAtt[1];
-          let Date = getDateTime(parseDate(tgl));
-          data.Date = Date.split(' ')[0];
-          data.Time = Date.split(' ')[1];
-        } else if (dataSplit.includes('TIME')) {
-          data.Time = splitAtt[1];
-        }
-      }
-    }
-  });
-
-  // add TP pride to data
-
-  if (allTp.length > 0) {
-    allTp.map((item, i) => {
-      let price = Number(item);
-      data[`TP_${i + 1}`] = price;
-    });
-  }
-
-  if (linkSS.length > 0) data.URL_Pic = linkSS;
-  if (!data.Account) data.Account = messageForumName;
-
-  return data;
-}
-
 function parseMessage(message) {
   const dataPair = ['XAUUSD', 'USDJPY', 'USOIL', 'EURUSD', 'GBPJPY'];
 
@@ -525,169 +20,172 @@ function parseMessage(message) {
   } else {
     dataMessageText = [messageText];
   }
+  try {
+    dataMessageText.forEach((el) => {
+      const dataText = el.toUpperCase();
 
-  dataMessageText.forEach((el) => {
-    const dataText = el.toUpperCase();
-
-    if (el.match(regexUrl)) {
-      linkSS.push(el);
-    }
-
-    if (dataText.includes('#')) {
-      data.Account = dataText.split('#')[1];
-    }
-    if (!data.Pair) {
-      if (/(gold|xau)/i.test(dataText)) {
-        data.Pair = 'XAUUSD';
-      } else {
-        dataPair.map((item) => {
-          dataText.includes(item) ? (data.Pair = item) : '';
-        });
-      }
-    }
-
-    if (/\/(INPUT|EDIT|DEL)/i.test(dataText)) {
-      data.cmd = dataText;
-    }
-
-    if (dataText.includes('WARN')) {
-      data.isWarning = true;
-    }
-
-    if (el.match(regSymbol)) {
-      const dataSplit = el.toUpperCase().replace(regSymbol, '@');
-
-      if (dataSplit.includes('MAX')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Max_Price = Number(dataEntry);
+      if (el.match(regexUrl)) {
+        linkSS.push(el);
       }
 
-      if (dataSplit.includes('DD')) {
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.DD_Price = Number(dataEntry);
+      if (!data.Pair) {
+        if (/(gold|xau)/i.test(dataText)) {
+          data.Pair = 'XAUUSD';
+        } else {
+          dataPair.map((item) => {
+            dataText.includes(item) ? (data.Pair = item) : '';
+          });
+        }
       }
 
-      //Entry_2
-      if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
-        const otherLimit = dataSplit.match(regAngka)[0];
-        data.Entry_2 = Number(otherLimit);
+      if (/\/(INPUT|EDIT|DEL)/i.test(dataText)) {
+        data.cmd = dataText;
       }
 
-      // Direction
-      if (dataSplit.includes('SELL')) {
-        const isLimit = dataSplit.includes('LIMIT');
-        const isStop = dataSplit.includes('STOP');
-        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Entry = Number(dataEntry);
-      } else if (dataSplit.includes('BUY')) {
-        const isLimit = dataSplit.includes('LIMIT');
-        const isStop = dataSplit.includes('STOP');
-        data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
-        let dataEntry = dataSplit.match(regAngka)[0];
-        data.Entry = Number(dataEntry);
+      if (dataText.includes('WARN')) {
+        data.isWarning = true;
       }
 
-      if (dataSplit.includes('@')) {
-        const splitAtt = dataSplit.split('@');
+      if (el.match(regSymbol)) {
+        const dataSplit = el.toUpperCase().replace(regSymbol, '@');
 
-        if (splitAtt[0] == 'ENTRY') {
+        if (dataSplit.includes('MAX')) {
+          let dataEntry = dataSplit.match(regAngka)[0];
+          data.Max_Price = Number(dataEntry);
+        }
+
+        if (dataSplit.includes('DD')) {
+          let dataEntry = dataSplit.match(regAngka)[0];
+          data.DD_Price = Number(dataEntry);
+        }
+
+        //Entry_2
+        if (dataSplit.includes('OTHER') || dataSplit.includes('ENTRY2')) {
+          const otherLimit = dataSplit.match(regAngka)[0];
+          data.Entry_2 = Number(otherLimit);
+        }
+
+        // Direction
+        if (dataSplit.includes('SELL')) {
+          const isLimit = dataSplit.includes('LIMIT');
+          const isStop = dataSplit.includes('STOP');
+          data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
+          let dataEntry = dataSplit.match(regAngka)[0];
+          data.Entry = Number(dataEntry);
+        } else if (dataSplit.includes('BUY')) {
+          const isLimit = dataSplit.includes('LIMIT');
+          const isStop = dataSplit.includes('STOP');
+          data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
           let dataEntry = dataSplit.match(regAngka)[0];
           data.Entry = Number(dataEntry);
         }
 
-        if (dataSplit.includes('_id')) {
-          data._id = splitAtt[1];
-        }
+        if (dataSplit.includes('@')) {
+          const splitAtt = dataSplit.split('@');
 
-        if (dataSplit.includes('BETP1')) {
-          data.BETP1 = splitAtt[1];
-        }
-
-        if (dataSplit.includes('EFIB')) {
-          data.Efib_Level = splitAtt[1];
-        }
-
-        if (dataSplit.includes('REF')) {
-          data.Ref = splitAtt[1];
-        }
-
-        if (dataSplit.includes('RISK')) {
-          data.Risk = splitAtt[1];
-        }
-
-        if (dataSplit.includes('NOTE')) {
-          data.Note = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('CONFIRM')) {
-          data.Confirm = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('TF')) {
-          data.Time_Frame = splitAtt[1].toLowerCase();
-        }
-
-        if (dataSplit.includes('NEWS')) {
-          data.News = Number(splitAtt[1]);
-        }
-        if (dataSplit.includes('STATUS')) {
-          data.Status = splitAtt[1];
-        }
-
-        // TP, TPP, SL, Date
-        if (dataSplit.includes('TP')) {
-          if (dataSplit.includes('TPP')) {
-            data.TP_Half = Number(splitAtt[1]);
-          } else if (dataSplit.includes('TP1')) {
-            data.TP_1 = Number(splitAtt[1]);
-          } else if (dataSplit.includes('TP2')) {
-            data.TP_2 = Number(splitAtt[1]);
-          } else if (dataSplit.includes('TP3')) {
-            data.TP_3 = Number(splitAtt[1]);
-          } else if (dataSplit.includes('TP4')) {
-            data.TP_4 = Number(splitAtt[1]);
-          } else if (dataSplit.includes('TP5')) {
-            data.TP_5 = Number(splitAtt[1]);
-          } else {
-            splitAtt.forEach((r) => {
-              if (r.includes('TP')) {
-              } else if (r.match(regAngka)) {
-                allTp.push(r);
-              }
-            });
+          if (splitAtt[0] == 'ENTRY') {
+            let dataEntry = dataSplit.match(regAngka)[0];
+            data.Entry = Number(dataEntry);
           }
-        } else if (dataSplit.includes('SL')) {
-          const slprice = Number(splitAtt[1]);
-          dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
-        } else if (dataSplit.includes('DATE_CLOSE')) {
-          let tgl = splitAtt[1];
-          data.Date_close = getDateTime(parseDate(tgl));
-        } else if (dataSplit.includes('DATE')) {
-          let tgl = splitAtt[1];
-          let Date = getDateTime(parseDate(tgl));
-          data.Date = Date.split(' ')[0];
-          data.Time = Date.split(' ')[1];
-        } else if (dataSplit.includes('TIME')) {
-          data.Time = splitAtt[1];
+
+          if (dataSplit.includes('_id')) {
+            data._id = splitAtt[1];
+          }
+
+          if (dataSplit.includes('BETP1')) {
+            data.BETP1 = splitAtt[1];
+          }
+
+          if (dataSplit.includes('EFIB')) {
+            data.Efib_Level = splitAtt[1];
+          }
+
+          if (dataSplit.includes('REF')) {
+            data.Ref = splitAtt[1];
+          }
+
+          if (dataText.includes('ACC')) {
+            data.Account = splitAtt[1];
+          }
+
+          if (dataSplit.includes('RISK')) {
+            data.Risk = splitAtt[1];
+          }
+
+          if (dataSplit.includes('NOTE')) {
+            data.Note = splitAtt[1].toLowerCase();
+          }
+
+          if (dataSplit.includes('CONFIRM')) {
+            data.Confirm = splitAtt[1].toLowerCase();
+          }
+
+          if (dataSplit.includes('TF')) {
+            data.Time_Frame = splitAtt[1].toLowerCase();
+          }
+
+          if (dataSplit.includes('NEWS')) {
+            data.News = Number(splitAtt[1]);
+          }
+          if (dataSplit.includes('STATUS')) {
+            data.Status = splitAtt[1];
+          }
+
+          // TP, TPP, SL, Date
+          if (dataSplit.includes('TP')) {
+            if (dataSplit.includes('TPP')) {
+              data.TP_Half = Number(splitAtt[1]);
+            } else if (dataSplit.includes('TP1')) {
+              data.TP_1 = Number(splitAtt[1]);
+            } else if (dataSplit.includes('TP2')) {
+              data.TP_2 = Number(splitAtt[1]);
+            } else if (dataSplit.includes('TP3')) {
+              data.TP_3 = Number(splitAtt[1]);
+            } else if (dataSplit.includes('TP4')) {
+              data.TP_4 = Number(splitAtt[1]);
+            } else if (dataSplit.includes('TP5')) {
+              data.TP_5 = Number(splitAtt[1]);
+            } else {
+              splitAtt.forEach((r) => {
+                if (r.includes('TP')) {
+                } else if (r.match(regAngka)) {
+                  allTp.push(r);
+                }
+              });
+            }
+          } else if (dataSplit.includes('SL')) {
+            const slprice = Number(splitAtt[1]);
+            dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
+          } else if (dataSplit.includes('DATE_CLOSE')) {
+            let tgl = splitAtt[1];
+            data.Date_close = getDateTime(parseDate(tgl));
+          } else if (dataSplit.includes('DATE')) {
+            let tgl = splitAtt[1];
+            let Date = getDateTime(parseDate(tgl));
+            data.Date = Date.split(' ')[0];
+            data.Time = Date.split(' ')[1];
+          } else if (dataSplit.includes('TIME')) {
+            data.Time = splitAtt[1];
+          }
         }
       }
-    }
-  });
-
-  // add TP price to data
-
-  if (allTp.length > 0) {
-    allTp.map((item, i) => {
-      let price = Number(item);
-      data[`TP_${i + 1}`] = price;
     });
+
+    // add TP price to data
+    if (allTp.length > 0) {
+      allTp.map((item, i) => {
+        let price = Number(item);
+        data[`TP_${i + 1}`] = price;
+      });
+    }
+
+    if (linkSS.length > 0) data.URL_Pic = linkSS;
+    if (!data.Account && messageForumName) data.Account = messageForumName;
+  } catch (error) {
+    console.log(error.message);
+  } finally {
+    return data;
   }
-
-  if (linkSS.length > 0) data.URL_Pic = linkSS;
-  if (!data.Account && messageForumName) data.Account = messageForumName;
-
-  return data;
 }
 
 // -========================================================================================================
@@ -796,7 +294,7 @@ function parseDate(date = null, time = null) {
 //==================================================
 // fn untuk mendapatkan format time yg benar
 //==================================================
-function getDateTime(date) {
+function getDateTime(date, forSheet = false) {
   const d = new Date(date);
   // const d = d;
   let yyyy = d.getFullYear();
@@ -808,9 +306,13 @@ function getDateTime(date) {
 
   if (dd < 10) dd = '0' + dd;
   if (mm < 10) mm = '0' + mm;
+  if (HH < 10) HH = '0' + HH;
+  if (m < 10) m = '0' + m;
 
   const formatted = dd + '/' + mm + '/' + yyyy + ' ' + HH + ':' + m;
-  return formatted;
+  const formatSheet = mm + '/' + dd + '/' + yyyy + ' ' + HH + ':' + m + ':' + '00';
+
+  return forSheet ? formatSheet : formatted;
 }
 
 //==================================================

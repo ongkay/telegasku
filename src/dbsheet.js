@@ -45,19 +45,27 @@ function inputData(data, sheet = sheetName, idSheet = dbId) {
 
     db.createSheetIfNotExists(sheet, columns);
     let userSheet = db.sheet(sheet);
+    let _id = generateId(akun);
 
     let dataInput = {
-      _id: generateId(akun),
+      _id,
       ...data,
     };
 
     // insert satu data
     userSheet.insert(dataInput);
 
+    let dataKirim = {
+      _id,
+      Date: getDateTime(data.Date),
+      Time: data.Time,
+      ...data,
+    };
+
     // users = userSheet.find()
     // Logger.log(users)
 
-    return statusSukses(dataInput);
+    return statusSukses(dataKirim);
   } catch (error) {
     return statusFilled(error.message);
   }

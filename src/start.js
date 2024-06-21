@@ -59,22 +59,8 @@ bot.on('message', (ctx) => {
   if (/(debug)/i.test(textMessage)) {
     console.log('ini adalah debug');
     ctx.replyIt(debugText);
-
-    html_message = `
-    < b > Bold text</b >
-    <i>Italicized text</i>
-    <a href="https://www.google.com">Link to Google</a>
-    <blockquote>
-    This is an example quote.
-    </blockquote>`;
-
-    ctx.replyIt(
-      `<blockquote>penggunaan:\n<code>/sholat lokasi(kab/kota)</code>\n\ncontoh:\n<code>/sholat sleman</code>\n<a href='https://www.google.com'>Link to Google</a></blockquote>`,
-      { parse_mode: 'HTML' }
-    );
-    // ctx.replyIt(html_message, { parse_mode: "HTML" })
   } else {
-    const dateNow = getDateTime(new Date());
+    const dateNow = new Date();
 
     const dataPesan = parseMessage(message);
     const dataFill = removeNullObj(dataPesan);
@@ -84,7 +70,8 @@ bot.on('message', (ctx) => {
       ...formatMessage,
       ...dataPesan,
       Date: dataPesan.Date ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
-      Time: !dataPesan.Time ? dateNow.split(' ')[1] : dataPesan.Time,
+      Time: !dataPesan.Time ? `${dateNow.getHours()}:${dateNow.getMinutes()}` : dataPesan.Time,
+
       ...dataAuto,
     };
 

@@ -32,7 +32,7 @@ function generateId(name = '') {
   return uniqueID;
 }
 
-function inputData(data, sheet = sheetName, idSheet = dbId) {
+function inputDataOld(data, sheet = sheetName, idSheet = dbId) {
   const db = Dbsheet.init(idSheet);
 
   try {
@@ -57,13 +57,43 @@ function inputData(data, sheet = sheetName, idSheet = dbId) {
 
     let dataKirim = {
       _id,
-      Date: getDateTime(data.Date),
+      // Date: getDateTime(data.Date),
       Time: data.Time,
       ...data,
     };
 
     // users = userSheet.find()
     // Logger.log(users)
+
+    return statusSukses(dataInput);
+  } catch (error) {
+    return statusFilled(error.message);
+  }
+}
+
+function inputData(data, sheet = sheetName, idSheet = dbId) {
+  const db = Dbsheet.init(idSheet);
+
+  try {
+    const akun = data.Account;
+
+    let userSheet = db.sheet(sheet);
+    let _id = generateId(akun);
+
+    let dataInput = {
+      _id,
+      ...data,
+    };
+
+    // insert satu data
+    userSheet.insert(dataInput);
+
+    let dataKirim = {
+      _id,
+      ...data,
+      Date: getDateTime(data.Date),
+      Created: getDateTime(data.Created),
+    };
 
     return statusSukses(dataKirim);
   } catch (error) {

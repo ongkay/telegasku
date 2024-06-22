@@ -287,6 +287,7 @@ function parseDate(date = null, time = null) {
     d.setHours(allTime[0]);
     d.setMinutes(allTime[1]);
   }
+  console.log(d.getHours());
 
   return d;
 }
@@ -816,3 +817,28 @@ const ajaa = {
 
 const { nama, alamat } = ajaa;
 console.log(nama);
+
+function getDateTime2(date, forSheet = false) {
+  const d = new Date(date);
+  // const d = d;
+  let yyyy = d.getFullYear();
+  let mm = d.getMonth() + 1; // month is zero-based
+  let dd = d.getDate();
+  let HH = d.getHours();
+  let m = d.getMinutes();
+  let getTime = d.getTime();
+
+  if (dd < 10) dd = '0' + dd;
+  if (mm < 10) mm = '0' + mm;
+  if (HH < 10) HH = '0' + HH;
+  if (m < 10) m = '0' + m;
+
+  const formatted = dd + '/' + mm + '/' + yyyy + ' ' + HH + ':' + m;
+  const formatSheet = mm + '/' + dd + '/' + yyyy + ' ' + HH + ':' + m + ':' + '00';
+
+  return forSheet ? formatSheet : formatted;
+}
+
+const timeku = getDateTime(new Date());
+console.log(timeku);
+console.log(getDateTime2(timeku));

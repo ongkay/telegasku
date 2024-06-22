@@ -36,15 +36,7 @@ const formatMessage = {
 
 const dataAuto = {
   Session: null,
-  RR: null,
-  RRR: null,
-  Lot_Size: null,
-  Net_Profit: null,
-  Net_Pips: null,
-  Net_RR: null,
-  ROI: null,
-  Saldo: null,
-  Created: getDateTime(new Date()),
+  Created: new Date(),
 };
 
 bot.on('message', (ctx) => {
@@ -69,9 +61,7 @@ bot.on('message', (ctx) => {
     const data = {
       ...formatMessage,
       ...dataPesan,
-      Date: dataPesan.Date ? `${dataPesan.Date} ${dataPesan.Time}` : dateNow,
-      Time: !dataPesan.Time ? `${dateNow.getHours()}:${dateNow.getMinutes()}` : dataPesan.Time,
-
+      Date: dataPesan.Date ?? dateNow,
       ...dataAuto,
     };
 

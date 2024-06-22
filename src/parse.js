@@ -158,14 +158,10 @@ function parseMessage(message) {
             dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
           } else if (dataSplit.includes('DATE_CLOSE')) {
             let tgl = splitAtt[1];
-            data.Date_close = getDateTime(parseDate(tgl));
+            data.Date_close = parseDate(tgl);
           } else if (dataSplit.includes('DATE')) {
             let tgl = splitAtt[1];
-            let Date = getDateTime(parseDate(tgl));
-            data.Date = Date.split(' ')[0];
-            data.Time = Date.split(' ')[1];
-          } else if (dataSplit.includes('TIME')) {
-            data.Time = splitAtt[1];
+            data.Date = parseDate(tgl);
           }
         }
       }

@@ -7,9 +7,17 @@ function parseMessage(message) {
   const data = {};
 
   const regAngka = /\d+\.?\d*/;
+  const regValue = /@ (\d+)/;
+
   const regSymbol = /[_@:-\s]+/;
   const regexUrl =
     /^(http[s]?:\/\/(www\.)?|ftp:\/\/(www\.)?|www\.){1}([0-9A-Za-z-\.@:%_\+~#=]+)+((\.[a-zA-Z]{2,3})+)(\/(.)*)?(\?(.)*)?/g;
+
+  const getValue = (d) => {
+    const regex = /[@:]\s*(\d+(\.\d+)?)/;
+    let v = d.match(regex)[1];
+    return parseFloat(v);
+  };
 
   let linkSS = [];
   let allTp = [];
@@ -70,14 +78,14 @@ function parseMessage(message) {
           const isLimit = dataSplit.includes('LIMIT');
           const isStop = dataSplit.includes('STOP');
           data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
-          let dataEntry = dataSplit.match(regAngka)[0];
-          data.Entry = Number(dataEntry);
+          let dataEntry = dataSplit.match(regAngka);
+          data.Entry = dataEntry ? Number(dataEntry[0]) : null;
         } else if (dataSplit.includes('BUY')) {
           const isLimit = dataSplit.includes('LIMIT');
           const isStop = dataSplit.includes('STOP');
-          data.Direction = isLimit ? 'SELL LIMIT' : isStop ? 'SELL STOP' : 'SELL NOW';
-          let dataEntry = dataSplit.match(regAngka)[0];
-          data.Entry = Number(dataEntry);
+          data.Direction = isLimit ? 'BUY LIMIT' : isStop ? 'BUY STOP' : 'BUY NOW';
+          let dataEntry = dataSplit.match(regAngka);
+          data.Entry = dataEntry ? Number(dataEntry[0]) : null;
         }
 
         if (dataSplit.includes('@')) {
@@ -134,17 +142,23 @@ function parseMessage(message) {
           // TP, TPP, SL, Date
           if (dataSplit.includes('TP')) {
             if (dataSplit.includes('TPP')) {
-              data.TP_Half = Number(splitAtt[1]);
+              data.TP_Half = getValue(dataSplit);
+            } else if (/(TP 1)/i.test(dataText)) {
+              let v = dataText.replace('TP 1', 'TP');
+              data.TP_1 = getValue(v);
+            } else if (/(TP 2)/i.test(dataText)) {
+              let v = dataText.replace('TP 2', 'TP');
+              data.TP_2 = getValue(v);
             } else if (dataSplit.includes('TP1')) {
-              data.TP_1 = Number(splitAtt[1]);
+              data.TP_1 = getValue(dataSplit);
             } else if (dataSplit.includes('TP2')) {
-              data.TP_2 = Number(splitAtt[1]);
+              data.TP_2 = getValue(dataSplit);
             } else if (dataSplit.includes('TP3')) {
-              data.TP_3 = Number(splitAtt[1]);
+              data.TP_3 = getValue(dataSplit);
             } else if (dataSplit.includes('TP4')) {
-              data.TP_4 = Number(splitAtt[1]);
+              data.TP_4 = getValue(dataSplit);
             } else if (dataSplit.includes('TP5')) {
-              data.TP_5 = Number(splitAtt[1]);
+              data.TP_5 = getValue(dataSplit);
             } else {
               splitAtt.forEach((r) => {
                 if (r.includes('TP')) {
@@ -154,7 +168,7 @@ function parseMessage(message) {
               });
             }
           } else if (dataSplit.includes('SL')) {
-            const slprice = Number(splitAtt[1]);
+            const slprice = getValue(dataSplit);
             dataSplit.includes('SL2') ? (data.SL_2 = slprice) : (data.SL = slprice);
           } else if (dataSplit.includes('DATE_CLOSE')) {
             let tgl = splitAtt[1];

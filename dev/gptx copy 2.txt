@@ -1,0 +1,32 @@
+id: unix id
+direction: pengambilan posisi "buy" atau "sell"
+dateOpen: tanggal eksekusi pengambilan posisi buy atau sell, tanggal berformat "dd/mm/yyyy HH:mm" GMT07 atau local indonesia, pastikan cocokan dengan tanggal berformat GMT07,
+entry: harga yang diambil saat open posisi buy atau sell, atau sebagai entry poin
+SL: harga stop lose atau stop level,
+TP1: harga take profit, atau pengambilan profit pertama
+TP2: harga take profit, atau pengambilan profit kedua, jika null atau nilainya 0 berarti tidak ada dan hasil winTP2 "false",
+TP3: harga take profit, atau pengambilan profit ketiga, jika null atau nilainya 0 berarti tidak ada dan hasil winTP3 "false",
+TP4: harga take profit, atau pengambilan profit keempat, jika null atau nilainya 0 berarti tidak ada dan hasil winTP4 "false",
+TP5: harga take profit, atau pengambilan profit kelima, jika null atau nilainya 0 berarti tidak ada dan hasil winTP5"false",
+
+id: unix id dari promp
+notActive: jika direction "BUY LIMIT" atau "BUY STOP", atau "SELL LIMIT", atau "SELL STOP" dan harga entry tidak terjemput atau tidak ketriger sebelum tercapai target profit minimal TP1 atau Target ratio 1:1 maka hasilnya adalah "true", jika tidak maka hasilnya "false"
+winTP1: jika TP1 tercapai sebelum SL, maka kembalikan nilainya "true". tetapi harga menyentuh SL terlebih dahulu sebelum tercapai target TP1 maka hasilnya "false",
+winTP2: jika TP1 tercapai sebelum SL, maka kembalikan nilainya "true". tetapi harga menyentuh SL terlebih dahulu sebelum tercapai target TP1 maka hasilnya "false",
+winTP3: jika TP1 tercapai sebelum SL, maka kembalikan nilainya "true". tetapi harga menyentuh SL terlebih dahulu sebelum tercapai target TP1 maka hasilnya "false",
+winTP4: jika TP1 tercapai sebelum SL, maka kembalikan nilainya "true". tetapi harga menyentuh SL terlebih dahulu sebelum tercapai target TP1 maka hasilnya "false",
+winTP5: jika TP1 tercapai sebelum SL, maka kembalikan nilainya "true". tetapi harga menyentuh SL terlebih dahulu sebelum tercapai target TP1 maka hasilnya "false",
+breakevenAftarTP1: jika sudah tercapai target TP1, lalu harga kembali sampai ke harga entry poin lagi maka nilainya adalah "true", jika tetap lanjut tanpa menyentuh harga entry point atau SL maka hasilnya "false"
+breakevenAftarTP2: jika sudah tercapai target TP2, lalu harga kembali sampai ke harga entry poin lagi maka nilainya adalah "true", jika tetap lanjut tanpa menyentuh harga entry point atau SL maka hasilnya "false"
+breakevenAftar1R: jika sudah tercapai target profit RR 1:1 atau risk reward ratio 1:1, lalu breakeven harga kembali sampai ke entry poin lagi maka nilainya adalah "true", jika harga tetap tidak breakeven setelah tercapai RR 1:1 maka hasilnya "false",
+breakevenAftar2R: jika sudah tercapai target profit RR 1:2 atau risk reward ratio 1:2, lalu breakeven harga kembali sampai ke entry poin lagi maka nilainya adalah "true", jika harga tetap tidak breakeven setelah tercapai RR 1:1 maka hasilnya "false",
+breakevenAftar3R: jika sudah tercapai target profit RR 1:3 atau risk reward ratio 1:3, lalu breakeven harga kembali sampai ke entry poin lagi maka nilainya adalah "true", jika harga tetap tidak breakeven setelah tercapai RR 1:1 maka hasilnya "false",
+breakevenAftar4R: jika sudah tercapai target profit RR 1:3 atau risk reward ratio 1:4, lalu breakeven harga kembali sampai ke entry poin lagi maka nilainya adalah "true", jika harga tetap tidak breakeven setelah tercapai RR 1:1 maka hasilnya "false",
+breakevenAftar5R: jika sudah tercapai target profit RR 1:4 atau risk reward ratio 1:5, lalu breakeven harga kembali sampai ke entry poin lagi maka nilainya adalah "true", jika harga tetap tidak breakeven setelah tercapai RR 1:1 maka hasilnya "false",
+drawdownPrice: harga drowdown, jika buy maka harga terendah yang berjalan di bawah entry poin sebelum harga SL dan jika sell maka harga yang berjalan tertinggi di atas entry poin sebelum harga SL
+maximumPrice: harga dari profit maksimum sebelum menyentuh SL dengan maksimal RR 1:20, jika direction "buy" maka harga tertinngi sebelum turun hingga menyentuh harga SL dan maksimalnya adalah RR 1:20, dan jika direction "Sell" maka harga terendah sebelum harga kembali menuju SL dan maksimal RR 1:20,
+dateCloseMax: sebagai tanggal penutupan "maximumPrice"
+isLose: jika harga tidak tercapai TP1 lalu terkena SL maka hasilnya "true", jika tercapai target TP1 dan tidak SL setelah TP1 maka hasilnya "false",
+
+breakEvenPrice1: 2341.745
+TP1R: 2341.501

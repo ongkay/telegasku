@@ -1,0 +1,30 @@
+id: 1
+Direction: BUY NOW
+dateOpen: 05/06/2024 00:35
+entry: 2329.904
+SL: 2318.263
+TP1: 2351.570
+TP2: 2373.128
+TP3: 2380.077
+TP4: 2396.825
+TP5: null
+
+winTP1: true
+winTP2: true
+winTP3: true
+winTP4: false
+winTP5: false
+breakevenAftarTP1: false
+breakevenAftarTP2: false
+breakevenAftar1R: true
+breakevenAftar2R: false
+breakevenAftar3R: false
+breakevenAftar4R: false
+breakevenAftar5R: false
+status: WINNER
+drawdownPrice: 2325.965
+maximumPrice: 2387.785
+dateCloseMax: 07/06/2024 12:00
+
+breakEvenPrice1: 2341.745
+TP1R: 2341.501

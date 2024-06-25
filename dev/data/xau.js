@@ -1,4 +1,4 @@
-const xau5m = [
+export const xau5m = [
   {
     time: '1710108000',
     open: '2179.105',

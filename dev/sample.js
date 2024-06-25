@@ -190,3 +190,54 @@ const jsonObject = csvToObject(csvData);
 console.log(jsonObject);
 
 //==========================================================
+function formatTimestamp(timestampStr) {
+  // Konversi string timestamp menjadi angka
+  var timestamp = parseInt(timestampStr, 10) * 1000; // kalikan 1000 karena timestamp input dalam detik, sedangkan JavaScript menggunakan milidetik
+
+  // Buat objek Date dari timestamp
+  var date = new Date(timestamp);
+
+  // Sesuaikan ke zona waktu GMT+07
+  var offset = 7 * 60; // offset dalam menit
+  var localDate = new Date(date.getTime() + offset * 60000);
+
+  // Dapatkan komponen-komponen tanggal dan waktu
+  var day = localDate.getUTCDate().toString().padStart(2, '0');
+  var month = (localDate.getUTCMonth() + 1).toString().padStart(2, '0'); // Bulan dimulai dari 0
+  var year = localDate.getUTCFullYear();
+  var hours = localDate.getUTCHours().toString().padStart(2, '0');
+  var minutes = localDate.getUTCMinutes().toString().padStart(2, '0');
+
+  // Gabungkan komponen-komponen menjadi format 'dd/MM/yyyy HH:mm'
+  var formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+  return formattedDate;
+}
+
+function formatTimestamp3(timestamp) {
+  var timestamp = parseInt(timestamp, 10) * 1000;
+  const date = new Date(timestamp);
+  console.log(timestamp);
+
+  // Mengambil bagian-bagian tanggal dan waktu
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Bulan dimulai dari 0
+  // const year = String(date.getFullYear()).slice(-2); // Mengambil dua digit terakhir tahun
+  const year = String(date.getFullYear());
+
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+  // Menggabungkan bagian-bagian tersebut ke dalam format 'dd/MM/yy HH:mm'
+  const formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`;
+
+  return formattedDate;
+}
+
+// Contoh penggunaan
+var timestampStr = '1719226200'; // timestamp dalam string
+var formattedDate = formatTimestamp3(timestampStr);
+console.log(formattedDate);
+// Example usage with mock data
+
+//=====================================================================

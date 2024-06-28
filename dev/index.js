@@ -50,7 +50,13 @@ function getTimstampToTgl(timestamp) {
   return formattedDate; //'24/06/2024 17:50' '1719226200'
 }
 
+function getRrPrice(isBuy, entryPrice, SlPrice, targetR) {
+  const gapPrice = isBuy ? entryPrice - SlPrice : SlPrice - entryPrice;
+  return isBuy ? entryPrice + gapPrice * targetR : entryPrice - gapPrice * targetR;
+}
+
 function analyzeTrade(trade, data) {
+  const direction = trade.direction;
   const entry = trade.entry;
   const sl = trade.SL;
   const tp1 = trade.TP1;
@@ -58,6 +64,11 @@ function analyzeTrade(trade, data) {
   const tp3 = trade.TP3;
   const tp4 = trade.TP4;
   const tp5 = trade.TP5;
+
+  const isBuy = direction.includes('BUY') ? true : false;
+
+  const tp20r = getRrPrice(isBuy, entry, sl, 20);
+
   // const dateOpen = new Date(parseDate('24/06/2024 17:40')); //debug
   const dateOpen = new Date(parseDate(trade.dateOpen));
   const tradeTimeUnix = Math.floor(dateOpen.getTime() / 1000);
@@ -73,9 +84,9 @@ function analyzeTrade(trade, data) {
     winTP3: false,
     winTP4: false,
     winTP5: false,
-    breakevenAftarTP1: false,
-    breakevenAftarTP2: false,
-    breakevenAftar1R: false,
+    hitBE_TP1: false,
+    hitBE_TP2: false,
+    hitBE_1R: false,
     breakevenAftar2R: false,
     breakevenAftar3R: false,
     breakevenAftar4R: false,
@@ -86,72 +97,150 @@ function analyzeTrade(trade, data) {
     dateCloseMax: null,
   };
 
-  let isHitSL = false;
+  let res2 = {
+    id: trade.id,
+    notActive: false,
+    maxPrice: null,
+    ddMaxPrice: null,
+    dateCloseMax: null,
+    tp1: {
+      price: tp1,
+      hit: false,
+      ddPrice: null,
+      dateClose: null,
+      hitToBE: false,
+    },
+    tp2: {
+      price: tp3,
+      hit: false,
+      ddPrice: null,
+      dateClose: null,
+      hitToBE: false,
+    },
+    tp3: {
+      price: tp3,
+      hit: false,
+      ddPrice: null,
+      dateClose: null,
+      hitToBE: false,
+    },
+    tp4: {
+      price: tp4,
+      hit: false,
+      ddPrice: null,
+      dateClose: null,
+      hitToBE: false,
+    },
+    tp5: {
+      price: tp5,
+      hit: false,
+      ddPrice: null,
+      dateClose: null,
+      hitToBE: false,
+    },
+  };
+  let targetTp = [];
+  let res = {
+    id: trade.id,
+    notActive: false,
+    maxPrice: null,
+    ddMaxPrice: null,
+    dateCloseMax: null,
+    targetTp,
+  };
+
   let isRunningProfit = true;
   let maxPrice = entry;
   let currentDdPrice = entry;
-  let ddMaxPrice = entry;
+  let ddMaxPrice = 0;
+  let tpPrice = tp1;
+  let hitTp1 = false;
+  let hitTp2 = false;
+  let hitTp3 = false;
+  let hitTp4 = false;
+  let hitTp5 = false;
+  let isHitSL = false;
 
-  if (trade.direction === 'BUY NOW') {
-    for (let i = 0; i < tradeData.length; i++) {
-      const row = tradeData[i];
+  for (let i = 0; i < tradeData.length; i++) {
+    const row = tradeData[i];
 
-      const highPrice = parseFloat(row.high);
-      const lowPrice = parseFloat(row.low);
-      const closePrice = parseFloat(row.close);
-      const openPrice = parseFloat(row.open);
+    const highPrice = parseFloat(row.high);
+    const lowPrice = parseFloat(row.low);
+    const closePrice = parseFloat(row.close);
+    const openPrice = parseFloat(row.open);
 
-      if (lowPrice <= sl) {
-        isHitSL = true;
-        result.isLose = true;
-        break;
+    if (lowPrice <= sl) {
+      isHitSL = true;
+      break;
+    }
+
+    isRunningProfit = lowPrice > entry ? true : false;
+
+    if (highPrice > maxPrice) {
+      maxPrice = highPrice;
+      res.maxPrice = highPrice;
+      res.dateCloseMax = getTimstampToTgl(row.time);
+    }
+
+    if (!isRunningProfit) {
+      if (lowPrice < currentDdPrice) {
+        currentDdPrice = lowPrice;
       }
-
-      isRunningProfit = lowPrice > entry ? true : false;
-
-      if (highPrice > maxPrice) {
-        maxPrice = highPrice;
-        result.maxPrice = highPrice;
-        // result.dateCloseMax = new Date(row.time * 1000).toISOString().replace('T', ' ').substr(0, 16);
-        result.dateCloseMax = getTimstampToTgl(row.time);
-      }
-
-      if (!isRunningProfit) {
-        if (lowPrice < currentDdPrice) {
-          currentDdPrice = lowPrice;
-        }
-      } else {
-        if (currentDdPrice < ddMaxPrice) {
-          ddMaxPrice = currentDdPrice;
-          result.ddPrice = ddMaxPrice;
-        }
-      }
-
-      if (!result.winTP1 && highPrice >= tp1) {
-        result.winTP1 = true;
-      }
-
-      if (!result.winTP2 && highPrice >= tp2) {
-        result.winTP2 = true;
-      }
-
-      if (!result.winTP3 && highPrice >= tp3) {
-        result.winTP3 = true;
-      }
-
-      if (result.winTP1 && lowPrice <= entry) {
-        result.breakevenAftarTP1 = true;
-      }
-      if (result.winTP2 && lowPrice <= entry) {
-        result.breakevenAftarTP2 = true;
+    } else {
+      if (currentDdPrice < ddMaxPrice) {
+        ddMaxPrice = currentDdPrice == entry ? 0 : currentDdPrice;
+        res.ddMaxPrice = ddMaxPrice;
       }
     }
-  } else if (trade.direction === 'SELL NOW') {
-    console.log('sell belum di setting');
-  }
 
-  console.log(maxPrice);
-  return result;
+    // cek tercapai Tarrget Profit
+
+    const pushTp = () => {
+      let saveData = {
+        price: tpPrice,
+        hit: true,
+        ddPrice: ddMaxPrice,
+        dateClose: getTimstampToTgl(row.time),
+        hitToBE: false,
+      };
+      targetTp.push(saveData);
+    };
+
+    const isHit = isBuy ? highPrice >= tpPrice : lowPrice <= tpPrice;
+    const isBE = isBuy ? lowPrice <= entry : highPrice >= entry;
+
+    if (!hitTp1 && isHit) {
+      pushTp();
+      hitTp1 = true;
+      tpPrice = tp2;
+    } else if (!hitTp2 && isHit) {
+      pushTp();
+      hitTp2 = true;
+      tpPrice = tp3;
+    } else if (!hitTp3 && isHit) {
+      pushTp();
+      hitTp3 = true;
+      tpPrice = tp4;
+    } else if (!hitTp4 && isHit) {
+      pushTp();
+      hitTp4 = true;
+      tpPrice = tp5;
+    } else if (!hitTp5 && isHit) {
+      pushTp();
+      hitTp5 = true;
+      tpPrice = tp5;
+    }
+
+    // cek BE setelah tercapai TP
+    if (hitTp1 && !hitTp2 && isBE) {
+      targetTp[0].hitToBE = true;
+    } else if (hitTp2 && !hitTp3 && isBE) {
+      targetTp[1].hitToBE = true;
+    } else if (hitTp3 && !hitTp4 && isBE) {
+      targetTp[2].hitToBE = true;
+    }
+  }
+  return res;
 }
 
 //=====================================================================
@@ -2443,9 +2532,9 @@ const hasilnya = {
   winTP3: false,
   winTP4: false,
   winTP5: false,
-  breakevenAftarTP1: false,
-  breakevenAftarTP2: true,
-  breakevenAftar1R: false,
+  hitBE_TP1: false,
+  hitBE_TP2: true,
+  hitBE_1R: false,
   breakevenAftar2R: false,
   breakevenAftar3R: false,
   breakevenAftar4R: false,

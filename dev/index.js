@@ -66,8 +66,10 @@ function analyzeTrade(trade, data) {
   const tp5 = trade.TP5;
 
   const isBuy = direction.includes('BUY') ? true : false;
+  const isOrderLimit = direction.includes('LIMIT') ? true : false;
+  const isOrderStop = direction.includes('STOP') ? true : false;
 
-  const tp20r = getRrPrice(isBuy, entry, sl, 20);
+  const tpR20 = getRrPrice(isBuy, entry, sl, 20);
 
   const dateOpen = new Date(parseDate(trade.dateOpen));
   const tradeTimeUnix = Math.floor(dateOpen.getTime() / 1000);
@@ -90,12 +92,14 @@ function analyzeTrade(trade, data) {
   let currentDdPrice = entry;
   let ddMaxPrice = 0;
   let tpPrice = tp1;
+  let tpPriceR = tpR1;
   let hitTp1 = false;
   let hitTp2 = false;
   let hitTp3 = false;
   let hitTp4 = false;
   let hitTp5 = false;
   let isHitSL = false;
+  let active = false;
 
   for (let i = 0; i < tradeData.length; i++) {
     const row = tradeData[i];
@@ -112,10 +116,22 @@ function analyzeTrade(trade, data) {
     } else if (!isBuy && highPrice >= sl) {
       isHitSL = true;
       break;
-    } else if (isBuy && maxPrice >= tp20r) {
+    } else if (isBuy && maxPrice >= tpR20) {
       break;
-    } else if (!isBuy && maxPrice <= tp20r) {
+    } else if (!isBuy && maxPrice <= tpR20) {
       break;
+    }
+
+    if (isOrderLimit) {
+      if ((isBuy && entry > lowPrice) || (!isBuy && entry < highPrice)) {
+        active = true;
+      }
+    } else if (isOrderStop) {
+      if ((isBuy && entry < highPrice) || (!isBuy && entry > lowPrice)) {
+        active = true;
+      }
+    } else {
+      active = true;
     }
 
     // save maxprice

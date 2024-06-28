@@ -69,76 +69,12 @@ function analyzeTrade(trade, data) {
 
   const tp20r = getRrPrice(isBuy, entry, sl, 20);
 
-  // const dateOpen = new Date(parseDate('24/06/2024 17:40')); //debug
   const dateOpen = new Date(parseDate(trade.dateOpen));
   const tradeTimeUnix = Math.floor(dateOpen.getTime() / 1000);
 
   const tradeData = data.filter((row) => row.time >= tradeTimeUnix);
   console.log('data trade ada ' + tradeData.length);
 
-  let result = {
-    id: trade.id,
-    notActive: false,
-    winTP1: false,
-    winTP2: false,
-    winTP3: false,
-    winTP4: false,
-    winTP5: false,
-    hitBE_TP1: false,
-    hitBE_TP2: false,
-    hitBE_1R: false,
-    breakevenAftar2R: false,
-    breakevenAftar3R: false,
-    breakevenAftar4R: false,
-    breakevenAftar5R: false,
-    isLose: false,
-    ddPrice: null,
-    maxPrice: null,
-    dateCloseMax: null,
-  };
-
-  let res2 = {
-    id: trade.id,
-    notActive: false,
-    maxPrice: null,
-    ddMaxPrice: null,
-    dateCloseMax: null,
-    tp1: {
-      price: tp1,
-      hit: false,
-      ddPrice: null,
-      dateClose: null,
-      hitToBE: false,
-    },
-    tp2: {
-      price: tp3,
-      hit: false,
-      ddPrice: null,
-      dateClose: null,
-      hitToBE: false,
-    },
-    tp3: {
-      price: tp3,
-      hit: false,
-      ddPrice: null,
-      dateClose: null,
-      hitToBE: false,
-    },
-    tp4: {
-      price: tp4,
-      hit: false,
-      ddPrice: null,
-      dateClose: null,
-      hitToBE: false,
-    },
-    tp5: {
-      price: tp5,
-      hit: false,
-      ddPrice: null,
-      dateClose: null,
-      hitToBE: false,
-    },
-  };
   let targetTp = [];
   let res = {
     id: trade.id,
@@ -169,32 +105,55 @@ function analyzeTrade(trade, data) {
     const closePrice = parseFloat(row.close);
     const openPrice = parseFloat(row.open);
 
-    if (lowPrice <= sl) {
+    // for stop eksekusi
+    if (isBuy && lowPrice <= sl) {
       isHitSL = true;
+      break;
+    } else if (!isBuy && highPrice >= sl) {
+      isHitSL = true;
+      break;
+    } else if (isBuy && maxPrice >= tp20r) {
+      break;
+    } else if (!isBuy && maxPrice <= tp20r) {
       break;
     }
 
-    isRunningProfit = lowPrice > entry ? true : false;
-
-    if (highPrice > maxPrice) {
+    // save maxprice
+    if (isBuy && highPrice > maxPrice) {
       maxPrice = highPrice;
       res.maxPrice = highPrice;
       res.dateCloseMax = getTimstampToTgl(row.time);
+    } else if (!isBuy && lowPrice < maxPrice) {
+      maxPrice = lowPrice;
+      res.maxPrice = lowPrice;
+      res.dateCloseMax = getTimstampToTgl(row.time);
     }
 
+    // cek runing profit
+    if (isBuy && lowPrice > entry) {
+      isRunningProfit = true;
+    } else if (!isBuy && highPrice < entry) {
+      isRunningProfit = true;
+    }
+
+    // save dd price in running profit
     if (!isRunningProfit) {
-      if (lowPrice < currentDdPrice) {
+      if (isBuy && lowPrice < currentDdPrice) {
         currentDdPrice = lowPrice;
+      } else if (!isBuy && highPrice > currentDdPrice) {
+        currentDdPrice = highPrice;
       }
     } else {
-      if (currentDdPrice < ddMaxPrice) {
+      if (isBuy && currentDdPrice < ddMaxPrice) {
+        ddMaxPrice = currentDdPrice == entry ? 0 : currentDdPrice;
+        res.ddMaxPrice = ddMaxPrice;
+      } else if (!isBuy && currentDdPrice > ddMaxPrice) {
         ddMaxPrice = currentDdPrice == entry ? 0 : currentDdPrice;
         res.ddMaxPrice = ddMaxPrice;
       }
     }
 
-    // cek tercapai Tarrget Profit
-
+    // save array TP
     const pushTp = () => {
       let saveData = {
         price: tpPrice,
@@ -209,6 +168,7 @@ function analyzeTrade(trade, data) {
     const isHit = isBuy ? highPrice >= tpPrice : lowPrice <= tpPrice;
     const isBE = isBuy ? lowPrice <= entry : highPrice >= entry;
 
+    // cek TP
     if (!hitTp1 && isHit) {
       pushTp();
       hitTp1 = true;
